@@ -296,16 +296,58 @@
       </div>
     </section>
 
-    <!-- SOLUTION -->
-
-    <section class="section">
+    <section class="section" id="testimonials" style="background: #0f172a">
       <div class="container">
-        <h2>Meet POW Dashboard</h2>
-
-        <p>
-          POW Dashboard converts internal agency work into clear client-friendly
-          updates that show progress, activity, and upcoming strategy.
+        <h2 style="margin-bottom: 10px">Endorsed by Industry Experts</h2>
+        <p style="margin-bottom: 50px">
+          Strategic leaders in AI and Client Renewals weigh in on the Visibility
+          Gap.
         </p>
+
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <div class="quote-icon">“</div>
+            <p>
+              "This is a strong direction, especially around making work more
+              visible in real time. That’s definitely a real problem agencies
+              are dealing with. Positioning this as something that
+              <strong>directly impacts client confidence and retention</strong>
+              is a game-changer for conversion."
+            </p>
+            <div class="user-profile">
+              <img
+                src="./images/eboni.jpg"
+                alt="Eboni Foster"
+                class="user-avatar"
+              />
+              <div class="user-info">
+                <h4>Eboni Foster</h4>
+                <span>Founder | Certified AI Systems Strategist</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <div class="quote-icon">“</div>
+            <p>
+              "A lot of churn comes from customers not understanding the value
+              being delivered. This helps bridge that gap by
+              <strong>making 'invisible work' visible.</strong> It reduces the
+              need for status calls while strengthening the value narrative."
+            </p>
+            <div class="user-profile">
+              <img
+                src="./images/kim.jpg"
+                alt="Kevin Niesman"
+                class="user-avatar"
+              />
+              <div class="user-info">
+                <h4>Kevin Niesman</h4>
+                <span>Renewals Manager, Concentrix</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -460,6 +502,53 @@
             .total-saved-display {
               font-size: 48px;
             }
+          }
+          .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            justify-content: center;
+          }
+
+          .testimonial-card {
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: 0.3s ease;
+          }
+
+          .testimonial-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-5px);
+          }
+
+          .user-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #3b82f6;
+            object-fit: cover;
+          }
+
+          .user-info h4 {
+            color: white;
+            margin: 0;
+            font-size: 1.1rem;
+          }
+
+          .user-info span {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            display: block;
+            margin-top: 4px;
+          }
+
+          .testimonial-card p strong {
+            color: #3b82f6;
           }
         </style>
 
