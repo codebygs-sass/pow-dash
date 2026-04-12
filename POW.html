@@ -5,307 +5,578 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Proof of Work Board | Client Portal</title>
     <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
       rel="stylesheet"
     />
     <style>
       :root {
-        --navy: #0f172a;
-        --slate: #64748b;
-        --light-bg: #f8fafc;
-        --success: #10b981;
-        --border: #e2e8f0;
-        --accent: #3b82f6;
+        --bg: #080c14;
+        --surface: #0f1724;
+        --surface2: #151e2e;
+        --border: rgba(255, 255, 255, 0.07);
+        --border-bright: rgba(99, 179, 237, 0.3);
+        --text: #e8edf5;
+        --text-muted: #7a90a8;
+        --text-dim: #4a5f75;
+        --accent: #63b3ed;
+        --accent-dim: rgba(99, 179, 237, 0.12);
+        --green: #4ade80;
+        --green-dim: rgba(74, 222, 128, 0.1);
       }
 
       * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family:
-          "Inter",
-          -apple-system,
-          sans-serif;
       }
 
       body {
-        background-color: var(--light-bg);
-        color: var(--navy);
-        padding: 40px;
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Sans", sans-serif;
+        min-height: 100vh;
+        padding: 40px 24px;
+        background-image:
+          radial-gradient(
+            ellipse 80% 50% at 50% -20%,
+            rgba(99, 179, 237, 0.08) 0%,
+            transparent 60%
+          ),
+          radial-gradient(
+            ellipse 40% 30% at 80% 80%,
+            rgba(74, 222, 128, 0.04) 0%,
+            transparent 50%
+          );
       }
 
-      .dashboard-container {
+      .container {
         max-width: 1100px;
         margin: 0 auto;
+        animation: fadeUp 0.6s ease both;
       }
 
-      /* --- Header Section --- */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
       header {
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        margin-bottom: 30px;
+        align-items: flex-start;
+        margin-bottom: 36px;
+        padding-bottom: 24px;
+        border-bottom: 1px solid var(--border);
       }
 
-      .brand-info h1 {
-        font-size: 1.5rem;
-        font-weight: 800;
-      }
-
-      .brand-info span {
-        color: var(--slate);
-        font-size: 0.9rem;
-      }
-
-      .controls {
+      .brand-logo {
         display: flex;
-        gap: 15px;
         align-items: center;
+        gap: 14px;
       }
 
-      .date-badge {
-        background: white;
-        padding: 8px 16px;
-        border-radius: 8px;
+      .logo-mark {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, var(--accent), #a78bfa);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1rem;
+        color: #fff;
+        box-shadow: 0 0 20px rgba(99, 179, 237, 0.3);
+      }
+
+      .brand-text h1 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .brand-text p {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 2px;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .date-pill {
+        padding: 7px 14px;
+        background: var(--surface);
         border: 1px solid var(--border);
-        font-size: 0.85rem;
+        border-radius: 8px;
+        font-size: 0.78rem;
+        font-family: "DM Mono", monospace;
+        color: var(--text-muted);
+      }
+
+      .btn-pdf {
+        padding: 8px 18px;
+        background: linear-gradient(135deg, var(--accent), #a78bfa);
+        border: none;
+        border-radius: 8px;
+        color: #fff;
         font-weight: 600;
-      }
-
-      /* --- AI Summary Section --- */
-      .summary-card {
-        background: white;
-        padding: 30px;
-        border-radius: 12px;
-        border: 1px solid var(--border);
-        margin-bottom: 25px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      }
-
-      .summary-header {
+        font-size: 0.82rem;
+        cursor: pointer;
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 15px;
-        color: var(--accent);
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: 0.75rem;
+        gap: 7px;
+        transition: opacity 0.2s;
+      }
+      .btn-pdf:hover {
+        opacity: 0.85;
       }
 
-      .summary-text {
-        font-size: 1.1rem;
-        line-height: 1.6;
-        color: #334155;
-      }
-
-      .summary-text strong {
-        color: var(--navy);
-        background: #dbeafe;
-        padding: 0 4px;
-      }
-
-      /* --- Visual Timeline --- */
-      .section-title {
-        font-size: 0.9rem;
-        font-weight: 700;
-        margin-bottom: 15px;
-        display: flex;
-        justify-content: space-between;
-      }
-
-      .timeline-container {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 15px;
-        margin-bottom: 30px;
-      }
-
-      .day-box {
-        background: white;
-        padding: 15px;
-        border-radius: 8px;
-        border: 1px solid var(--border);
-        text-align: center;
-      }
-
-      .day-name {
-        font-size: 0.75rem;
-        color: var(--slate);
-        margin-bottom: 5px;
-        display: block;
-      }
-
-      .task-count {
-        font-weight: 800;
-        font-size: 1.2rem;
-      }
-
-      /* --- Activity Logs --- */
-      .logs-container {
-        background: white;
-        border-radius: 12px;
-        border: 1px solid var(--border);
+      .impact-card {
+        background: linear-gradient(
+          135deg,
+          rgba(99, 179, 237, 0.08) 0%,
+          rgba(167, 139, 250, 0.06) 100%
+        );
+        border: 1px solid var(--border-bright);
+        border-radius: 16px;
+        padding: 28px 32px;
+        margin-bottom: 28px;
+        position: relative;
         overflow: hidden;
       }
 
-      .logs-header {
-        padding: 15px 20px;
-        background: #f1f5f9;
+      .impact-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+          90deg,
+          var(--accent),
+          #a78bfa,
+          var(--green)
+        );
+      }
+
+      .impact-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 14px;
+      }
+
+      .impact-label .dot {
+        width: 6px;
+        height: 6px;
+        background: var(--accent);
+        border-radius: 50%;
+        animation: blink 2s ease-in-out infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      .impact-text {
+        font-size: 1.05rem;
+        line-height: 1.75;
+        color: #c8d8e8;
+      }
+
+      .impact-text strong {
+        color: #fff;
+        font-weight: 600;
+        background: rgba(99, 179, 237, 0.15);
+        padding: 1px 6px;
+        border-radius: 4px;
+        border: 1px solid rgba(99, 179, 237, 0.2);
+      }
+
+      .metrics-row {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 12px;
+        margin-bottom: 28px;
+      }
+
+      .metric-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px 14px;
+        text-align: center;
+        transition:
+          border-color 0.2s,
+          transform 0.2s;
+      }
+      .metric-card:hover {
+        border-color: rgba(99, 179, 237, 0.25);
+        transform: translateY(-2px);
+      }
+      .metric-card.peak {
+        border-color: rgba(99, 179, 237, 0.35);
+        background: linear-gradient(
+          135deg,
+          var(--surface),
+          rgba(99, 179, 237, 0.06)
+        );
+      }
+
+      .metric-day {
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        margin-bottom: 8px;
+      }
+      .metric-card.peak .metric-day {
+        color: var(--accent);
+      }
+
+      .metric-num {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text);
+        line-height: 1;
+        font-family: "DM Mono", monospace;
+      }
+      .metric-card.peak .metric-num {
+        color: var(--accent);
+      }
+
+      .metric-label {
+        font-size: 0.65rem;
+        color: var(--text-dim);
+        margin-top: 4px;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 14px;
+      }
+
+      .section-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+      }
+
+      .section-count {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        font-family: "DM Mono", monospace;
+      }
+
+      .log-container {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        overflow: hidden;
+        margin-bottom: 28px;
+      }
+
+      .log-header {
+        padding: 14px 24px;
+        background: var(--surface2);
         border-bottom: 1px solid var(--border);
         display: flex;
         justify-content: space-between;
         align-items: center;
       }
 
-      .pulse-dot {
-        height: 8px;
-        width: 8px;
-        background-color: var(--success);
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 8px;
-        box-shadow: 0 0 0 rgba(16, 185, 129, 0.4);
-        animation: pulse 2s infinite;
+      .live-indicator {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        font-weight: 600;
       }
 
-      @keyframes pulse {
+      .pulse-ring {
+        position: relative;
+        width: 10px;
+        height: 10px;
+      }
+      .pulse-ring::before,
+      .pulse-ring::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+      }
+      .pulse-ring::before {
+        background: var(--green);
+      }
+      .pulse-ring::after {
+        background: rgba(74, 222, 128, 0.4);
+        animation: ripple 2s ease-out infinite;
+      }
+
+      @keyframes ripple {
         0% {
-          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
-        }
-        70% {
-          box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+          transform: scale(1);
+          opacity: 1;
         }
         100% {
-          box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+          transform: scale(2.5);
+          opacity: 0;
         }
+      }
+
+      .sync-label {
+        font-size: 0.72rem;
+        color: var(--text-dim);
+        font-family: "DM Mono", monospace;
       }
 
       table {
         width: 100%;
         border-collapse: collapse;
       }
-
-      th {
-        text-align: left;
-        padding: 12px 20px;
-        font-size: 0.75rem;
-        color: var(--slate);
-        text-transform: uppercase;
-      }
-
-      td {
-        padding: 15px 20px;
+      thead tr {
         border-bottom: 1px solid var(--border);
-        font-size: 0.9rem;
       }
-
-      .type-tag {
-        padding: 4px 8px;
-        border-radius: 4px;
-        font-size: 0.7rem;
+      th {
+        padding: 12px 24px;
+        text-align: left;
+        font-size: 0.68rem;
         font-weight: 700;
-        background: #f1f5f9;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+      }
+      td {
+        padding: 16px 24px;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.88rem;
+      }
+      tr:last-child td {
+        border-bottom: none;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
       }
 
-      /* --- Next Steps --- */
-      .next-steps {
-        margin-top: 30px;
-        padding: 20px;
-        background: #1e293b;
-        color: white;
-        border-radius: 12px;
+      .timestamp {
+        color: var(--text-muted);
+        font-family: "DM Mono", monospace;
+        font-size: 0.78rem;
       }
 
-      .step-item {
+      .type-chip {
+        display: inline-block;
+        padding: 3px 9px;
+        border-radius: 5px;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        background: var(--surface2);
+        border: 1px solid var(--border);
+        color: var(--text-muted);
+      }
+
+      .action-text {
+        color: var(--text);
+        font-weight: 500;
+      }
+
+      .outcome-text {
+        color: var(--green);
+        font-weight: 600;
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-top: 10px;
-        font-size: 0.9rem;
-        opacity: 0.9;
+        gap: 6px;
+        font-family: "DM Mono", monospace;
+        font-size: 0.82rem;
       }
 
-      .step-item i {
-        color: var(--success);
+      .next-week {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px 28px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .next-week::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(90deg, var(--green), var(--accent));
+      }
+
+      .next-week-title {
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text-dim);
+        margin-bottom: 16px;
+      }
+
+      .strategy-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .strategy-item:last-child {
+        border-bottom: none;
+      }
+
+      .strategy-icon {
+        width: 24px;
+        height: 24px;
+        background: var(--green-dim);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--green);
+        font-size: 0.65rem;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      .strategy-text {
+        font-size: 0.88rem;
+        color: #b0c4d8;
+        line-height: 1.5;
+      }
+
+      .footer {
+        text-align: center;
+        margin-top: 32px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+      }
+      .footer-brand {
+        font-size: 0.75rem;
+        color: var(--text-dim);
+        letter-spacing: 0.05em;
+      }
+      .footer-brand span {
+        color: var(--accent);
+        font-weight: 600;
       }
     </style>
   </head>
   <body>
-    <div class="dashboard-container">
+    <div class="container">
       <header>
-        <div class="brand-info">
-          <!-- <h1>APEX MEDIA</h1> -->
-          <h1>Spark Media</h1>
-          <span>Client: <strong>River & Co.</strong></span>
+        <div class="brand-logo">
+          <div class="logo-mark">SM</div>
+          <div class="brand-text">
+            <h1>Spark Media</h1>
+            <p>
+              Client Portal →
+              <strong style="color: var(--text)">River & Co.</strong>
+            </p>
+          </div>
         </div>
-        <div class="controls">
-          <div class="date-badge">Mar 24, 2026 - Mar 31, 2026</div>
-          <button
-            style="
-              padding: 8px 16px;
-              border-radius: 8px;
-              border: none;
-              background: var(--navy);
-              color: white;
-              cursor: pointer;
-              font-weight: 600;
-            "
-          >
-            <i class="fa-solid fa-download"></i> PDF
+        <div class="header-right">
+          <div class="date-pill">Mar 24 – Mar 31, 2026</div>
+          <button class="btn-pdf">
+            <i class="fa-solid fa-download"></i> Export PDF
           </button>
         </div>
       </header>
 
-      <div class="summary-card">
-        <div class="summary-header">
-          <i class="fa-solid fa-wand-magic-sparkles"></i> Weekly Strategic
-          Impact
+      <div class="impact-card">
+        <div class="impact-label">
+          <div class="dot"></div>
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          Weekly Strategic Impact
         </div>
-        <div class="summary-text" id="ai-summary">
+        <div class="impact-text">
           This week, we restructured Google Ads to target
           <strong>high-intent keywords</strong>, reducing cost per lead by
           <strong>18%</strong>. The retargeting audience expanded by
           <strong>2,400 users</strong>, and our landing page A/B test launched
-          with 3 variants—early results show a
+          with 3 variants — early results show a
           <strong>22% improvement</strong> in click-through rate.
         </div>
       </div>
 
-      <div class="section-title">
-        <span>ACTIVITY VELOCITY</span>
-        <span style="color: var(--slate); font-weight: 400"
-          >35 Total Tasks Completed</span
-        >
+      <div class="section-header">
+        <span class="section-label">Activity Velocity</span>
+        <span class="section-count">35 tasks completed this week</span>
       </div>
-      <div class="timeline-container">
-        <div class="day-box">
-          <span class="day-name">MON</span><span class="task-count">5</span>
+      <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-day">Mon</div>
+          <div class="metric-num">5</div>
+          <div class="metric-label">tasks</div>
         </div>
-        <div class="day-box">
-          <span class="day-name">TUE</span><span class="task-count">9</span>
+        <div class="metric-card">
+          <div class="metric-day">Tue</div>
+          <div class="metric-num">9</div>
+          <div class="metric-label">tasks</div>
         </div>
-        <div class="day-box" style="border-color: var(--accent)">
-          <span class="day-name" style="color: var(--accent)">WED</span
-          ><span class="task-count">12</span>
+        <div class="metric-card peak">
+          <div class="metric-day">Wed</div>
+          <div class="metric-num">12</div>
+          <div class="metric-label">peak day</div>
         </div>
-        <div class="day-box">
-          <span class="day-name">THU</span><span class="task-count">4</span>
+        <div class="metric-card">
+          <div class="metric-day">Thu</div>
+          <div class="metric-num">4</div>
+          <div class="metric-label">tasks</div>
         </div>
-        <div class="day-box">
-          <span class="day-name">FRI</span><span class="task-count">5</span>
+        <div class="metric-card">
+          <div class="metric-day">Fri</div>
+          <div class="metric-num">5</div>
+          <div class="metric-label">tasks</div>
         </div>
       </div>
 
-      <div class="logs-container">
-        <div class="logs-header">
-          <span style="font-weight: 700; font-size: 0.9rem">
-            <span class="pulse-dot"></span> RECENT ACTIVITY LOGS
-          </span>
-          <span style="font-size: 0.75rem; color: var(--slate)"
-            >Synced from ClickUp 2m ago</span
-          >
+      <div class="section-header">
+        <span class="section-label">Recent Activity Logs</span>
+      </div>
+      <div class="log-container">
+        <div class="log-header">
+          <div class="live-indicator">
+            <div class="pulse-ring"></div>
+            Live Feed
+          </div>
+          <div class="sync-label">Synced from ClickUp · 2m ago</div>
         </div>
         <table>
           <thead>
@@ -316,39 +587,40 @@
               <th>Outcome</th>
             </tr>
           </thead>
-          <tbody id="log-table-body"></tbody>
+          <tbody id="log-body"></tbody>
         </table>
       </div>
 
-      <div class="next-steps">
-        <div
-          style="
-            font-weight: 700;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
-            color: #94a3b8;
-          "
-        >
-          NEXT WEEK'S STRATEGY
+      <div class="next-week">
+        <div class="next-week-title">Next Week's Strategy</div>
+        <div class="strategy-item">
+          <div class="strategy-icon"><i class="fa-solid fa-check"></i></div>
+          <div class="strategy-text">
+            Pivot budget to the winning A/B test variant to maximize CTR
+          </div>
         </div>
-        <div class="step-item">
-          <i class="fa-solid fa-circle-check"></i>
-          Pivot budget to the winning A/B test variant to maximize CTR
+        <div class="strategy-item">
+          <div class="strategy-icon"><i class="fa-solid fa-check"></i></div>
+          <div class="strategy-text">
+            Scale bids on high-intent keyword clusters showing 18% CPL drop
+          </div>
         </div>
-        <div class="step-item">
-          <i class="fa-solid fa-circle-check"></i>
-          Scale bids on high-intent keyword clusters showing 18% CPL drop
+        <div class="strategy-item">
+          <div class="strategy-icon"><i class="fa-solid fa-check"></i></div>
+          <div class="strategy-text">
+            Deploy "Phase 2" creative to the 2,400 new retargeting users
+          </div>
         </div>
-        <div class="step-item">
-          <i class="fa-solid fa-circle-check"></i>
-          Deploy dedicated "Phase 2" creative to the 2,400 new retargeting users
+      </div>
+
+      <div class="footer">
+        <div class="footer-brand">
+          Powered by <span>Albetora</span> · Proof of Work Dashboard
         </div>
       </div>
     </div>
-
     <script>
-      // Mock data representing what the tool would pull from a PM tool
-      const activityLogs = [
+      const logs = [
         {
           time: "Today, 2:15 PM",
           type: "STRUCTURE",
@@ -363,36 +635,34 @@
         },
         {
           time: "Yesterday, 4:45 PM",
-          type: "A/B TESTING",
+          type: "A/B TEST",
           action: "Launched three-variant landing page test",
-          outcome: "22% CTR Increase",
+          outcome: "22% CTR Boost",
         },
         {
           time: "Yesterday, 1:10 PM",
           type: "BIDDING",
-          action: "Adjusted bids for 'Buy' intent",
+          action: "Adjusted bids for 'Buy' intent keywords",
           outcome: "Efficiency Gain",
         },
         {
           time: "Mar 28, 9:00 AM",
           type: "AUDIT",
-          action: "Audited search terms for alignment",
-          outcome: "Strategy Mapping",
+          action: "Audited search terms for strategic alignment",
+          outcome: "Strategy Mapped",
         },
       ];
 
-      const logTable = document.getElementById("log-table-body");
-
-      activityLogs.forEach((log) => {
-        const row = `
-                <tr>
-                    <td style="color: var(--slate); font-weight: 500;">${log.time}</td>
-                    <td><span class="type-tag">${log.type}</span></td>
-                    <td style="font-weight: 600;">${log.action}</td>
-                    <td style="color: var(--success); font-weight: 700;"><i class="fa-solid fa-arrow-trend-up"></i> ${log.outcome}</td>
-                </tr>
-            `;
-        logTable.innerHTML += row;
+      const tbody = document.getElementById("log-body");
+      logs.forEach((log) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+      <td><span class="timestamp">${log.time}</span></td>
+      <td><span class="type-chip">${log.type}</span></td>
+      <td><span class="action-text">${log.action}</span></td>
+      <td><span class="outcome-text"><i class="fa-solid fa-arrow-trend-up"></i>${log.outcome}</span></td>
+    `;
+        tbody.appendChild(tr);
       });
     </script>
   </body>
