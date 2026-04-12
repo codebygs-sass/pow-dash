@@ -1,669 +1,464 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Proof of Work Board | Client Portal</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
-      rel="stylesheet"
-    />
-    <style>
-      :root {
-        --bg: #080c14;
-        --surface: #0f1724;
-        --surface2: #151e2e;
-        --border: rgba(255, 255, 255, 0.07);
-        --border-bright: rgba(99, 179, 237, 0.3);
-        --text: #e8edf5;
-        --text-muted: #7a90a8;
-        --text-dim: #4a5f75;
-        --accent: #63b3ed;
-        --accent-dim: rgba(99, 179, 237, 0.12);
-        --green: #4ade80;
-        --green-dim: rgba(74, 222, 128, 0.1);
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proof of Work Board | Client Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f0f4f8;
+      --surface: #ffffff;
+      --surface2: #e8eef4;
+      --border: #c8d6e0;
+      --border-accent: #2563eb;
+      --text: #0f172a;
+      --text-muted: #334155;
+      --text-dim: #475569;
+      --accent: #2563eb;
+      --accent-light: #dbeafe;
+      --green: #15803d;
+      --green-bg: #dcfce7;
+      --green-border: #86efac;
+    }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-      body {
-        background: var(--bg);
-        color: var(--text);
-        font-family: "DM Sans", sans-serif;
-        min-height: 100vh;
-        padding: 40px 24px;
-        background-image:
-          radial-gradient(
-            ellipse 80% 50% at 50% -20%,
-            rgba(99, 179, 237, 0.08) 0%,
-            transparent 60%
-          ),
-          radial-gradient(
-            ellipse 40% 30% at 80% 80%,
-            rgba(74, 222, 128, 0.04) 0%,
-            transparent 50%
-          );
-      }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+      padding: 40px 24px;
+    }
 
-      .container {
-        max-width: 1100px;
-        margin: 0 auto;
-        animation: fadeUp 0.6s ease both;
-      }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      animation: fadeUp 0.5s ease both;
+    }
 
-      @keyframes fadeUp {
-        from {
-          opacity: 0;
-          transform: translateY(16px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 36px;
-        padding-bottom: 24px;
-        border-bottom: 1px solid var(--border);
-      }
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--border);
+    }
 
-      .brand-logo {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-      }
+    .brand-logo { display: flex; align-items: center; gap: 14px; }
 
-      .logo-mark {
-        width: 42px;
-        height: 42px;
-        background: linear-gradient(135deg, var(--accent), #a78bfa);
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 700;
-        font-size: 1rem;
-        color: #fff;
-        box-shadow: 0 0 20px rgba(99, 179, 237, 0.3);
-      }
+    .logo-mark {
+      width: 44px; height: 44px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem; color: #fff;
+      box-shadow: 0 2px 8px rgba(37,99,235,0.3);
+    }
 
-      .brand-text h1 {
-        font-size: 1.3rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-      }
-      .brand-text p {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-top: 2px;
-      }
+    .brand-text h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
 
-      .header-right {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-      }
+    .brand-text p {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+      font-weight: 500;
+    }
 
-      .date-pill {
-        padding: 7px 14px;
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        font-size: 0.78rem;
-        font-family: "DM Mono", monospace;
-        color: var(--text-muted);
-      }
+    .header-right { display: flex; align-items: center; gap: 12px; }
 
-      .btn-pdf {
-        padding: 8px 18px;
-        background: linear-gradient(135deg, var(--accent), #a78bfa);
-        border: none;
-        border-radius: 8px;
-        color: #fff;
-        font-weight: 600;
-        font-size: 0.82rem;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 7px;
-        transition: opacity 0.2s;
-      }
-      .btn-pdf:hover {
-        opacity: 0.85;
-      }
+    .date-pill {
+      padding: 8px 16px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-family: 'DM Mono', monospace;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
 
-      .impact-card {
-        background: linear-gradient(
-          135deg,
-          rgba(99, 179, 237, 0.08) 0%,
-          rgba(167, 139, 250, 0.06) 100%
-        );
-        border: 1px solid var(--border-bright);
-        border-radius: 16px;
-        padding: 28px 32px;
-        margin-bottom: 28px;
-        position: relative;
-        overflow: hidden;
-      }
+    .btn-pdf {
+      padding: 9px 20px;
+      background: var(--accent);
+      border: none; border-radius: 8px;
+      color: #fff; font-weight: 600; font-size: 0.84rem;
+      cursor: pointer; display: flex; align-items: center; gap: 8px;
+      transition: background 0.2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-pdf:hover { background: #1d4ed8; }
 
-      .impact-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(
-          90deg,
-          var(--accent),
-          #a78bfa,
-          var(--green)
-        );
-      }
+    /* ── IMPACT CARD ── */
+    .impact-card {
+      background: var(--accent-light);
+      border: 1.5px solid #93c5fd;
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 28px 32px;
+      margin-bottom: 28px;
+    }
 
-      .impact-label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--accent);
-        margin-bottom: 14px;
-      }
+    .impact-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 14px;
+    }
 
-      .impact-label .dot {
-        width: 6px;
-        height: 6px;
-        background: var(--accent);
-        border-radius: 50%;
-        animation: blink 2s ease-in-out infinite;
-      }
+    .impact-label .dot {
+      width: 7px; height: 7px;
+      background: var(--accent); border-radius: 50%;
+      animation: blink 2s ease-in-out infinite;
+    }
 
-      @keyframes blink {
-        0%,
-        100% {
-          opacity: 1;
-        }
-        50% {
-          opacity: 0.3;
-        }
-      }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
 
-      .impact-text {
-        font-size: 1.05rem;
-        line-height: 1.75;
-        color: #c8d8e8;
-      }
+    .impact-text {
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: var(--text);
+      font-weight: 400;
+    }
 
-      .impact-text strong {
-        color: #fff;
-        font-weight: 600;
-        background: rgba(99, 179, 237, 0.15);
-        padding: 1px 6px;
-        border-radius: 4px;
-        border: 1px solid rgba(99, 179, 237, 0.2);
-      }
+    .impact-text strong {
+      color: #1e3a8a;
+      font-weight: 700;
+      background: #bfdbfe;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
 
-      .metrics-row {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 12px;
-        margin-bottom: 28px;
-      }
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex; justify-content: space-between;
+      align-items: center; margin-bottom: 14px;
+    }
 
-      .metric-card {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 18px 14px;
-        text-align: center;
-        transition:
-          border-color 0.2s,
-          transform 0.2s;
-      }
-      .metric-card:hover {
-        border-color: rgba(99, 179, 237, 0.25);
-        transform: translateY(-2px);
-      }
-      .metric-card.peak {
-        border-color: rgba(99, 179, 237, 0.35);
-        background: linear-gradient(
-          135deg,
-          var(--surface),
-          rgba(99, 179, 237, 0.06)
-        );
-      }
+    .section-label {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
 
-      .metric-day {
-        font-size: 0.68rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--text-dim);
-        margin-bottom: 8px;
-      }
-      .metric-card.peak .metric-day {
-        color: var(--accent);
-      }
+    .section-count {
+      font-size: 0.78rem; color: var(--text-dim);
+      font-family: 'DM Mono', monospace; font-weight: 500;
+    }
 
-      .metric-num {
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: var(--text);
-        line-height: 1;
-        font-family: "DM Mono", monospace;
-      }
-      .metric-card.peak .metric-num {
-        color: var(--accent);
-      }
+    /* ── METRICS ── */
+    .metrics-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px; margin-bottom: 28px;
+    }
 
-      .metric-label {
-        font-size: 0.65rem;
-        color: var(--text-dim);
-        margin-top: 4px;
-      }
+    .metric-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 14px; text-align: center;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .metric-card:hover {
+      border-color: var(--accent);
+      box-shadow: 0 2px 10px rgba(37,99,235,0.1);
+    }
 
-      .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 14px;
-      }
+    .metric-card.peak {
+      border-color: var(--accent);
+      background: var(--accent-light);
+      box-shadow: 0 2px 10px rgba(37,99,235,0.12);
+    }
 
-      .section-label {
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--text-muted);
-      }
+    .metric-day {
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-dim); margin-bottom: 8px;
+    }
+    .metric-card.peak .metric-day { color: var(--accent); }
 
-      .section-count {
-        font-size: 0.75rem;
-        color: var(--text-dim);
-        font-family: "DM Mono", monospace;
-      }
+    .metric-num {
+      font-size: 1.9rem; font-weight: 700;
+      color: var(--text); line-height: 1;
+      font-family: 'DM Mono', monospace;
+    }
+    .metric-card.peak .metric-num { color: var(--accent); }
 
-      .log-container {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        overflow: hidden;
-        margin-bottom: 28px;
-      }
+    .metric-label {
+      font-size: 0.67rem; color: var(--text-dim);
+      margin-top: 5px; font-weight: 500;
+    }
 
-      .log-header {
-        padding: 14px 24px;
-        background: var(--surface2);
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+    /* ── LOG TABLE ── */
+    .log-container {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px; overflow: hidden; margin-bottom: 28px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    }
 
-      .live-indicator {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 0.78rem;
-        font-weight: 600;
-      }
+    .log-header {
+      padding: 14px 24px;
+      background: var(--surface2);
+      border-bottom: 1.5px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
 
-      .pulse-ring {
-        position: relative;
-        width: 10px;
-        height: 10px;
-      }
-      .pulse-ring::before,
-      .pulse-ring::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        border-radius: 50%;
-      }
-      .pulse-ring::before {
-        background: var(--green);
-      }
-      .pulse-ring::after {
-        background: rgba(74, 222, 128, 0.4);
-        animation: ripple 2s ease-out infinite;
-      }
+    .live-indicator {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 0.82rem; font-weight: 700; color: var(--text);
+    }
 
-      @keyframes ripple {
-        0% {
-          transform: scale(1);
-          opacity: 1;
-        }
-        100% {
-          transform: scale(2.5);
-          opacity: 0;
-        }
-      }
+    .pulse-ring { position: relative; width: 10px; height: 10px; flex-shrink: 0; }
+    .pulse-ring::before, .pulse-ring::after {
+      content: ''; position: absolute; inset: 0; border-radius: 50%;
+    }
+    .pulse-ring::before { background: #16a34a; }
+    .pulse-ring::after {
+      background: rgba(22,163,74,0.35);
+      animation: ripple 2s ease-out infinite;
+    }
 
-      .sync-label {
-        font-size: 0.72rem;
-        color: var(--text-dim);
-        font-family: "DM Mono", monospace;
-      }
+    @keyframes ripple {
+      0% { transform: scale(1); opacity: 1; }
+      100% { transform: scale(2.5); opacity: 0; }
+    }
 
-      table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-      thead tr {
-        border-bottom: 1px solid var(--border);
-      }
-      th {
-        padding: 12px 24px;
-        text-align: left;
-        font-size: 0.68rem;
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--text-dim);
-      }
-      td {
-        padding: 16px 24px;
-        border-bottom: 1px solid var(--border);
-        font-size: 0.88rem;
-      }
-      tr:last-child td {
-        border-bottom: none;
-      }
-      tr:hover td {
-        background: rgba(255, 255, 255, 0.02);
-      }
+    .sync-label {
+      font-size: 0.74rem; color: var(--text-dim);
+      font-family: 'DM Mono', monospace; font-weight: 500;
+    }
 
-      .timestamp {
-        color: var(--text-muted);
-        font-family: "DM Mono", monospace;
-        font-size: 0.78rem;
-      }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { border-bottom: 1.5px solid var(--border); background: #f8fafc; }
+    th {
+      padding: 12px 24px; text-align: left;
+      font-size: 0.7rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-muted);
+    }
+    td { padding: 16px 24px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: #f8fafc; }
 
-      .type-chip {
-        display: inline-block;
-        padding: 3px 9px;
-        border-radius: 5px;
-        font-size: 0.65rem;
-        font-weight: 700;
-        letter-spacing: 0.08em;
-        text-transform: uppercase;
-        background: var(--surface2);
-        border: 1px solid var(--border);
-        color: var(--text-muted);
-      }
+    .timestamp {
+      color: var(--text-muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem; font-weight: 500;
+    }
 
-      .action-text {
-        color: var(--text);
-        font-weight: 500;
-      }
+    .type-chip {
+      display: inline-block; padding: 3px 10px; border-radius: 5px;
+      font-size: 0.67rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
 
-      .outcome-text {
-        color: var(--green);
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        font-family: "DM Mono", monospace;
-        font-size: 0.82rem;
-      }
+    .action-text { color: var(--text); font-weight: 600; }
 
-      .next-week {
-        background: var(--surface);
-        border: 1px solid var(--border);
-        border-radius: 16px;
-        padding: 24px 28px;
-        position: relative;
-        overflow: hidden;
-      }
+    .outcome-text {
+      color: var(--green); font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+      font-family: 'DM Mono', monospace; font-size: 0.82rem;
+    }
 
-      .next-week::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 2px;
-        background: linear-gradient(90deg, var(--green), var(--accent));
-      }
+    /* ── NEXT WEEK ── */
+    .next-week {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 24px 28px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+    }
 
-      .next-week-title {
-        font-size: 0.7rem;
-        font-weight: 700;
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        color: var(--text-dim);
-        margin-bottom: 16px;
-      }
+    .next-week-title {
+      font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 16px;
+    }
 
-      .strategy-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--border);
-      }
-      .strategy-item:last-child {
-        border-bottom: none;
-      }
+    .strategy-item {
+      display: flex; align-items: flex-start;
+      gap: 12px; padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .strategy-item:last-child { border-bottom: none; }
 
-      .strategy-icon {
-        width: 24px;
-        height: 24px;
-        background: var(--green-dim);
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--green);
-        font-size: 0.65rem;
-        flex-shrink: 0;
-        margin-top: 1px;
-      }
+    .strategy-icon {
+      width: 26px; height: 26px;
+      background: var(--green-bg);
+      border: 1px solid var(--green-border);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--green); font-size: 0.68rem;
+      flex-shrink: 0; margin-top: 1px;
+    }
 
-      .strategy-text {
-        font-size: 0.88rem;
-        color: #b0c4d8;
-        line-height: 1.5;
-      }
+    .strategy-text {
+      font-size: 0.9rem; color: var(--text-muted);
+      line-height: 1.6; font-weight: 500;
+    }
 
-      .footer {
-        text-align: center;
-        margin-top: 32px;
-        padding-top: 20px;
-        border-top: 1px solid var(--border);
-      }
-      .footer-brand {
-        font-size: 0.75rem;
-        color: var(--text-dim);
-        letter-spacing: 0.05em;
-      }
-      .footer-brand span {
-        color: var(--accent);
-        font-weight: 600;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container">
-      <header>
-        <div class="brand-logo">
-          <div class="logo-mark">SM</div>
-          <div class="brand-text">
-            <h1>Spark Media</h1>
-            <p>
-              Client Portal →
-              <strong style="color: var(--text)">River & Co.</strong>
-            </p>
-          </div>
-        </div>
-        <div class="header-right">
-          <div class="date-pill">Mar 24 – Mar 31, 2026</div>
-          <button class="btn-pdf">
-            <i class="fa-solid fa-download"></i> Export PDF
-          </button>
-        </div>
-      </header>
+    /* ── FOOTER ── */
+    .footer {
+      text-align: center; margin-top: 32px;
+      padding-top: 20px; border-top: 1.5px solid var(--border);
+    }
 
-      <div class="impact-card">
-        <div class="impact-label">
-          <div class="dot"></div>
-          <i class="fa-solid fa-wand-magic-sparkles"></i>
-          Weekly Strategic Impact
-        </div>
-        <div class="impact-text">
-          This week, we restructured Google Ads to target
-          <strong>high-intent keywords</strong>, reducing cost per lead by
-          <strong>18%</strong>. The retargeting audience expanded by
-          <strong>2,400 users</strong>, and our landing page A/B test launched
-          with 3 variants — early results show a
-          <strong>22% improvement</strong> in click-through rate.
-        </div>
-      </div>
+    .footer-brand {
+      font-size: 0.76rem; color: var(--text-dim);
+      letter-spacing: 0.05em; font-weight: 500;
+    }
+    .footer-brand span { color: var(--accent); font-weight: 700; }
+  </style>
+</head>
+<body>
+<div class="container">
 
-      <div class="section-header">
-        <span class="section-label">Activity Velocity</span>
-        <span class="section-count">35 tasks completed this week</span>
-      </div>
-      <div class="metrics-row">
-        <div class="metric-card">
-          <div class="metric-day">Mon</div>
-          <div class="metric-num">5</div>
-          <div class="metric-label">tasks</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-day">Tue</div>
-          <div class="metric-num">9</div>
-          <div class="metric-label">tasks</div>
-        </div>
-        <div class="metric-card peak">
-          <div class="metric-day">Wed</div>
-          <div class="metric-num">12</div>
-          <div class="metric-label">peak day</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-day">Thu</div>
-          <div class="metric-num">4</div>
-          <div class="metric-label">tasks</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-day">Fri</div>
-          <div class="metric-num">5</div>
-          <div class="metric-label">tasks</div>
-        </div>
-      </div>
-
-      <div class="section-header">
-        <span class="section-label">Recent Activity Logs</span>
-      </div>
-      <div class="log-container">
-        <div class="log-header">
-          <div class="live-indicator">
-            <div class="pulse-ring"></div>
-            Live Feed
-          </div>
-          <div class="sync-label">Synced from ClickUp · 2m ago</div>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>Timestamp</th>
-              <th>Type</th>
-              <th>Action Performed</th>
-              <th>Outcome</th>
-            </tr>
-          </thead>
-          <tbody id="log-body"></tbody>
-        </table>
-      </div>
-
-      <div class="next-week">
-        <div class="next-week-title">Next Week's Strategy</div>
-        <div class="strategy-item">
-          <div class="strategy-icon"><i class="fa-solid fa-check"></i></div>
-          <div class="strategy-text">
-            Pivot budget to the winning A/B test variant to maximize CTR
-          </div>
-        </div>
-        <div class="strategy-item">
-          <div class="strategy-icon"><i class="fa-solid fa-check"></i></div>
-          <div class="strategy-text">
-            Scale bids on high-intent keyword clusters showing 18% CPL drop
-          </div>
-        </div>
-        <div class="strategy-item">
-          <div class="strategy-icon"><i class="fa-solid fa-check"></i></div>
-          <div class="strategy-text">
-            Deploy "Phase 2" creative to the 2,400 new retargeting users
-          </div>
-        </div>
-      </div>
-
-      <div class="footer">
-        <div class="footer-brand">
-          Powered by <span>Albetora</span> · Proof of Work Dashboard
-        </div>
+  <header>
+    <div class="brand-logo">
+      <div class="logo-mark">SM</div>
+      <div class="brand-text">
+        <h1>Spark Media</h1>
+        <p>Client Portal → <strong>River & Co.</strong></p>
       </div>
     </div>
-    <script>
-      const logs = [
-        {
-          time: "Today, 2:15 PM",
-          type: "STRUCTURE",
-          action: "Restructured campaigns for high-intent keywords",
-          outcome: "18% Lower CPL",
-        },
-        {
-          time: "Today, 11:30 AM",
-          type: "AUDIENCE",
-          action: "Expanded retargeting via first-party sync",
-          outcome: "+2,400 Users",
-        },
-        {
-          time: "Yesterday, 4:45 PM",
-          type: "A/B TEST",
-          action: "Launched three-variant landing page test",
-          outcome: "22% CTR Boost",
-        },
-        {
-          time: "Yesterday, 1:10 PM",
-          type: "BIDDING",
-          action: "Adjusted bids for 'Buy' intent keywords",
-          outcome: "Efficiency Gain",
-        },
-        {
-          time: "Mar 28, 9:00 AM",
-          type: "AUDIT",
-          action: "Audited search terms for strategic alignment",
-          outcome: "Strategy Mapped",
-        },
-      ];
+    <div class="header-right">
+      <div class="date-pill">Mar 24 – Mar 31, 2026</div>
+      <button class="btn-pdf"><i class="fa-solid fa-download"></i> Export PDF</button>
+    </div>
+  </header>
 
-      const tbody = document.getElementById("log-body");
-      logs.forEach((log) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
+  <div class="impact-card">
+    <div class="impact-label">
+      <div class="dot"></div>
+      <i class="fa-solid fa-wand-magic-sparkles"></i>
+      Weekly Strategic Impact
+    </div>
+    <div class="impact-text">
+      This week, we restructured Google Ads to target <strong>high-intent keywords</strong>,
+      reducing cost per lead by <strong>18%</strong>. The retargeting audience expanded by
+      <strong>2,400 users</strong>, and our landing page A/B test launched with 3 variants —
+      early results show a <strong>22% improvement</strong> in click-through rate.
+    </div>
+  </div>
+
+  <div class="section-header">
+    <span class="section-label">Activity Velocity</span>
+    <span class="section-count">35 tasks completed this week</span>
+  </div>
+  <div class="metrics-row">
+    <div class="metric-card">
+      <div class="metric-day">Mon</div>
+      <div class="metric-num">5</div>
+      <div class="metric-label">tasks</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-day">Tue</div>
+      <div class="metric-num">9</div>
+      <div class="metric-label">tasks</div>
+    </div>
+    <div class="metric-card peak">
+      <div class="metric-day">Wed</div>
+      <div class="metric-num">12</div>
+      <div class="metric-label">peak day</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-day">Thu</div>
+      <div class="metric-num">4</div>
+      <div class="metric-label">tasks</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-day">Fri</div>
+      <div class="metric-num">5</div>
+      <div class="metric-label">tasks</div>
+    </div>
+  </div>
+
+  <div class="section-header">
+    <span class="section-label">Recent Activity Logs</span>
+  </div>
+  <div class="log-container">
+    <div class="log-header">
+      <div class="live-indicator">
+        <div class="pulse-ring"></div>
+        Live Feed
+      </div>
+      <div class="sync-label">Synced from ClickUp · 2m ago</div>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Timestamp</th>
+          <th>Type</th>
+          <th>Action Performed</th>
+          <th>Outcome</th>
+        </tr>
+      </thead>
+      <tbody id="log-body"></tbody>
+    </table>
+  </div>
+
+  <div class="next-week">
+    <div class="next-week-title">Next Week's Strategy</div>
+    <div class="strategy-item">
+      <div class="strategy-icon"><i class="fa-solid fa-check"></i></div>
+      <div class="strategy-text">Pivot budget to the winning A/B test variant to maximize CTR</div>
+    </div>
+    <div class="strategy-item">
+      <div class="strategy-icon"><i class="fa-solid fa-check"></i></div>
+      <div class="strategy-text">Scale bids on high-intent keyword clusters showing 18% CPL drop</div>
+    </div>
+    <div class="strategy-item">
+      <div class="strategy-icon"><i class="fa-solid fa-check"></i></div>
+      <div class="strategy-text">Deploy "Phase 2" creative to the 2,400 new retargeting users</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-brand">Powered by <span>Albetora</span> · Proof of Work Dashboard</div>
+  </div>
+
+</div>
+<script>
+  const logs = [
+    { time: "Today, 2:15 PM", type: "STRUCTURE", action: "Restructured campaigns for high-intent keywords", outcome: "18% Lower CPL" },
+    { time: "Today, 11:30 AM", type: "AUDIENCE", action: "Expanded retargeting via first-party sync", outcome: "+2,400 Users" },
+    { time: "Yesterday, 4:45 PM", type: "A/B TEST", action: "Launched three-variant landing page test", outcome: "22% CTR Boost" },
+    { time: "Yesterday, 1:10 PM", type: "BIDDING", action: "Adjusted bids for 'Buy' intent keywords", outcome: "Efficiency Gain" },
+    { time: "Mar 28, 9:00 AM", type: "AUDIT", action: "Audited search terms for strategic alignment", outcome: "Strategy Mapped" },
+  ];
+
+  const tbody = document.getElementById("log-body");
+  logs.forEach(log => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
       <td><span class="timestamp">${log.time}</span></td>
       <td><span class="type-chip">${log.type}</span></td>
       <td><span class="action-text">${log.action}</span></td>
-      <td><span class="outcome-text"><i class="fa-solid fa-arrow-trend-up"></i>${log.outcome}</span></td>
+      <td><span class="outcome-text"><i class="fa-solid fa-arrow-trend-up"></i> ${log.outcome}</span></td>
     `;
-        tbody.appendChild(tr);
-      });
-    </script>
-  </body>
+    tbody.appendChild(tr);
+  });
+</script>
+</body>
 </html>
