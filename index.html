@@ -511,6 +511,108 @@
           .testimonial-card p strong {
             color: #3b82f6;
           }
+
+          /* Pricing Section CSS */
+
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 30px;
+        max-width: 800px;
+        margin: 40px auto 0 auto;
+      }
+
+      .pricing-card {
+        background: #1e293b;
+        padding: 40px 30px;
+        border-radius: 16px;
+        border: 1px solid #334155;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        text-align: center;
+      }
+
+      .pricing-card.popular {
+        border: 2px solid #3b82f6;
+        transform: scale(1.03);
+        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
+      }
+
+      .badge {
+        position: absolute;
+        top: -15px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #3b82f6;
+        color: white;
+        padding: 4px 16px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .pricing-card h3 {
+        font-size: 20px;
+        color: #cbd5f5;
+        margin-bottom: 15px;
+      }
+
+      .price-box {
+        margin: 20px 0;
+      }
+
+      .current-price {
+        font-size: 48px;
+        font-weight: 800;
+        color: white;
+      }
+
+      .old-price {
+        font-size: 20px;
+        color: #64748b;
+        text-decoration: line-through;
+        margin-right: 10px;
+      }
+
+      .price-period {
+        color: #94a3b8;
+        font-size: 14px;
+      }
+
+      .pricing-features {
+        list-style: none;
+        padding: 0;
+        margin: 25px 0;
+        text-align: left;
+      }
+
+      .pricing-features li {
+        color: #cbd5f5;
+        font-size: 14px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .pricing-features li::before {
+        content: "✓";
+        color: #3b82f6;
+        font-weight: bold;
+      }
+      
+      .pricing-card.disabled {
+        opacity: 0.6;
+        border-style: dashed;
+      }
+      
+      .pricing-card.disabled li::before {
+        color: #64748b;
+      }
         </style>
 
         <div class="container">
@@ -594,6 +696,58 @@
             </div>
           </div>
         </div>
+
+        <!-- PRICING SECTION -->
+    <!-- PRICING SECTION -->
+<section class="section" id="pricing" style="background: #1e293b; border-top: 1px solid #334155; border-bottom: 1px solid #334155; margin: 60px 0;">
+      <div class="container">
+        <h2>Simple, Value-Driven Pricing</h2>
+        <p>Lock in early-bird rates before public launch features drop.</p>
+        
+        <div class="pricing-grid">
+          <!-- Founding Price Card -->
+          <div class="pricing-card popular">
+            <div class="badge">Limited Spots Left</div>
+            <h3>Founding Plan</h3>
+            <div class="price-box">
+              <span class="old-price">$99</span>
+              <span class="current-price">$49</span>
+              <span class="price-period">/ month</span>
+            </div>
+            <p style="color: #94a3b8; font-size: 13px;">Grandfathered rate forever.</p>
+            
+            <ul class="pricing-features">
+              <li>Up to 15 Active Clients</li>
+              <li>Automated Activity Timelines</li>
+              <li>AI Core Weekly Report Generator</li>
+              <li>Standard Integration Hub</li>
+              <li>Priority Support Support</li>
+            </ul>
+            
+            <a href="https://calendly.com/codebygs/30min" target="_blank" class="btn demo" style="margin-top: 15px;">Claim Founding Spot</a>
+          </div>
+
+          <!-- Regular Price Card -->
+          <div class="pricing-card disabled">
+            <h3>Regular Plan</h3>
+            <div class="price-box">
+              <span class="current-price">$99</span>
+              <span class="price-period">/ month</span>
+            </div>
+            <p style="color: #64748b; font-size: 13px;">Coming after early access closes</p>
+            
+            <ul class="pricing-features">
+              <li>All Early Core Dashboard Layouts</li>
+              <li>Advanced AI Summarization</li>
+              <li>Enterprise API Integration</li>
+              <li>Custom Whitelabel Dashboard Options</li>
+            </ul>
+            
+            <a href="#" class="btn inquire" style="margin-top: 15px; cursor: not-allowed; pointer-events: none;">Locked</a>
+          </div>
+        </div>
+      </div>
+    </section>
 
         <script>
           (function () {
