@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Client Health Score Calculator | Albetora</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f5f4f0;
+    color: #1a1a1a;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+  }
+
+  .page-wrap {
+    max-width: 620px;
+    margin: 0 auto;
+  }
+
+  .top-brand {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .top-brand a {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1a1a1a;
+    text-decoration: none;
+    letter-spacing: 0.5px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  .header h1 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.3;
+    margin-bottom: 10px;
+  }
+
+  .header p {
+    font-size: 15px;
+    color: #666;
+    line-height: 1.6;
+  }
+
+  .progress {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-dot {
+    height: 4px;
+    flex: 1;
+    border-radius: 2px;
+    background: #ddd;
+    transition: background 0.2s;
+  }
+
+  .progress-dot.done { background: #1a1a1a; }
+
+  .q-block {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 12px;
+  }
+
+  .q-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 14px;
+    display: block;
+    line-height: 1.5;
+  }
+
+  .q-num {
+    display: inline-block;
+    background: #f0f0f0;
+    color: #666;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 4px;
+    padding: 2px 7px;
+    margin-right: 8px;
+  }
+
+  .options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #e8e8e8;
+    font-size: 14px;
+    color: #1a1a1a;
+    transition: background 0.15s, border-color 0.15s;
+    user-select: none;
+  }
+
+  .opt:hover { background: #f8f8f8; }
+
+  .opt.selected {
+    border-color: #1a1a1a;
+    background: #f0f0f0;
+  }
+
+  .opt input { display: none; }
+
+  .dot {
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 1.5px solid #ccc;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+  }
+
+  .opt.selected .dot {
+    background: #1a1a1a;
+    border-color: #1a1a1a;
+  }
+
+  .opt.selected .dot::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+    display: block;
+  }
+
+  .calc-btn {
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 15px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 10px;
+    border: 1.5px solid #1a1a1a;
+    background: #1a1a1a;
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    letter-spacing: 0.2px;
+  }
+
+  .calc-btn:hover { opacity: 0.85; }
+
+  .calc-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* SCORE REVEAL — shown before email gate */
+  .score-reveal {
+    display: none;
+    margin-top: 1.5rem;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .score-reveal-top {
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+
+  .score-ring {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    flex-direction: column;
+    border: 3px solid;
+  }
+
+  .score-num {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .score-sub {
+    font-size: 11px;
+    margin-top: 3px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+  }
+
+  .risk-tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 5px 16px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    letter-spacing: 0.2px;
+  }
+
+  .result-msg {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.7;
+    max-width: 440px;
+    margin: 0 auto;
+  }
+
+  /* EMAIL GATE */
+  .email-gate {
+    padding: 1.5rem;
+    background: #f8f8f6;
+    border-top: 1px solid #e8e8e8;
+    text-align: center;
+  }
+
+  .email-gate h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 6px;
+  }
+
+  .email-gate p {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .email-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .email-row input[type="text"],
+  .email-row input[type="email"] {
+    flex: 1;
+    padding: 11px 14px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+    color: #1a1a1a;
+    transition: border-color 0.15s;
+  }
+
+  .email-row input:focus { border-color: #1a1a1a; }
+
+  .email-full {
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    background: #fff;
+    color: #1a1a1a;
+    margin-bottom: 10px;
+    transition: border-color 0.15s;
+  }
+
+  .email-full:focus { border-color: #1a1a1a; }
+
+  .submit-btn {
+    width: 100%;
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 9px;
+    border: 1.5px solid #1a1a1a;
+    background: #1a1a1a;
+    color: #fff;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    margin-bottom: 10px;
+  }
+
+  .submit-btn:hover { opacity: 0.85; }
+
+  .skip-link {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 12px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 4px;
+  }
+
+  .skip-link:hover { color: #666; }
+
+  /* FULL RESULT — shown after email submitted */
+  .result {
+    display: none;
+    margin-top: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid #e8e8e8;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .result-top {
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+
+  .result-bottom {
+    padding: 1.25rem 1.5rem;
+    background: #f8f8f6;
+    border-top: 1px solid #e8e8e8;
+    text-align: center;
+  }
+
+  .result-bottom p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+
+  .action-list {
+    text-align: left;
+    margin-bottom: 16px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .action-list li {
+    font-size: 14px;
+    color: #333;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+    line-height: 1.5;
+  }
+
+  .action-list li:last-child { border-bottom: none; }
+
+  .action-list li::before {
+    content: '→ ';
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+
+  .cta-btn {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    border-radius: 9px;
+    border: 1.5px solid #1a1a1a;
+    background: #1a1a1a;
+    color: #fff;
+    cursor: pointer;
+    text-decoration: none;
+    transition: opacity 0.15s;
+    margin-bottom: 10px;
+  }
+
+  .cta-btn:hover { opacity: 0.85; }
+
+  .cta-secondary {
+    display: block;
+    width: 100%;
+    padding: 11px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 9px;
+    border: 1px solid #ccc;
+    background: #fff;
+    color: #1a1a1a;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s;
+    margin-bottom: 10px;
+  }
+
+  .cta-secondary:hover { background: #f5f5f5; }
+
+  .reset-btn {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 13px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+    padding: 6px;
+    margin-top: 4px;
+  }
+
+  .reset-btn:hover { color: #555; }
+
+  .footer {
+    text-align: center;
+    margin-top: 2.5rem;
+    font-size: 12px;
+    color: #aaa;
+  }
+
+  .footer a { color: #aaa; text-decoration: none; }
+  .footer a:hover { color: #555; }
+
+  .error-msg {
+    font-size: 12px;
+    color: #c0392b;
+    margin-bottom: 8px;
+    display: none;
+  }
+
+  @media (max-width: 480px) {
+    .header h1 { font-size: 22px; }
+    .q-label { font-size: 14px; }
+    .email-row { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <div class="top-brand">
+    <a href="https://albetora.com" target="_blank">Albetora</a>
+  </div>
+
+  <div class="header">
+    <h1>Is your retainer client about to cancel?</h1>
+    <p>Answer 6 questions about one client. Get their churn risk score in 60 seconds.</p>
+  </div>
+
+  <div class="progress" id="progress">
+    <div class="progress-dot" id="pd0"></div>
+    <div class="progress-dot" id="pd1"></div>
+    <div class="progress-dot" id="pd2"></div>
+    <div class="progress-dot" id="pd3"></div>
+    <div class="progress-dot" id="pd4"></div>
+    <div class="progress-dot" id="pd5"></div>
+  </div>
+
+  <div id="questions"></div>
+
+  <button class="calc-btn" id="calcBtn" disabled onclick="showScoreReveal()">Calculate churn risk →</button>
+
+  <!-- STEP 1: Score shown, email gate below -->
+  <div class="score-reveal" id="scoreReveal">
+    <div class="score-reveal-top" id="scoreRevealTop"></div>
+    <div class="email-gate">
+      <h3>Get your free action plan</h3>
+      <p>Based on your score, we'll send you exactly what to do to fix this client relationship before it's too late.</p>
+      <div class="email-row">
+        <input type="text" id="firstName" placeholder="First name" />
+        <input type="text" id="agencyName" placeholder="Agency name" />
+      </div>
+      <input type="email" class="email-full" id="emailInput" placeholder="Your email address" />
+      <div class="error-msg" id="errorMsg">Please fill in all fields with a valid email.</div>
+      <button class="submit-btn" onclick="submitLead()">Send me the action plan →</button>
+      <button class="skip-link" onclick="skipGate()">Skip — just show me the results</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Full result after email submitted -->
+  <div class="result" id="result">
+    <div class="result-top" id="resultTop"></div>
+    <div class="result-bottom" id="resultBottom"></div>
+  </div>
+
+  <div class="footer">
+    <p>Built by <a href="https://albetora.com" target="_blank">Albetora</a> · Turn invisible work into visible trust</p>
+  </div>
+
+</div>
+
+<script>
+const questions = [
+  {
+    q: "When did your client last respond to a message or update from you?",
+    opts: [
+      { text: "Within the last 2 days", score: 0 },
+      { text: "3–7 days ago", score: 1 },
+      { text: "1–2 weeks ago", score: 2 },
+      { text: "More than 2 weeks ago", score: 3 }
+    ]
+  },
+  {
+    q: "How often does this client ask 'what have you been doing?'",
+    opts: [
+      { text: "Never — they trust the process", score: 0 },
+      { text: "Occasionally, once a month", score: 1 },
+      { text: "Almost every week", score: 2 },
+      { text: "Every single update call", score: 3 }
+    ]
+  },
+  {
+    q: "How does this client feel about your monthly report?",
+    opts: [
+      { text: "They love it and reference it", score: 0 },
+      { text: "They read it but don't say much", score: 1 },
+      { text: "They skim it or ignore it", score: 2 },
+      { text: "They've complained it isn't clear", score: 3 }
+    ]
+  },
+  {
+    q: "Is this client's renewal coming up in the next 60 days?",
+    opts: [
+      { text: "No, renewal is far out", score: 0 },
+      { text: "Yes, but they seem happy", score: 1 },
+      { text: "Yes, and they've gone quiet", score: 2 },
+      { text: "Yes, and they've raised concerns", score: 3 }
+    ]
+  },
+  {
+    q: "How confident are you that this client understands the work you do?",
+    opts: [
+      { text: "Very confident — they get it", score: 0 },
+      { text: "Somewhat — they see the outcomes", score: 1 },
+      { text: "Not much — they see invoices only", score: 2 },
+      { text: "Not at all — they think we do very little", score: 3 }
+    ]
+  },
+  {
+    q: "Has this client mentioned competitors, pricing, or 'exploring options'?",
+    opts: [
+      { text: "Never", score: 0 },
+      { text: "Once, but casually", score: 1 },
+      { text: "A few times recently", score: 2 },
+      { text: "Yes — directly or frequently", score: 3 }
+    ]
+  }
+];
+
+const answers = new Array(questions.length).fill(null);
+let currentScore = 0;
+let currentPct = 0;
+let currentRisk = '';
+let currentColor = '';
+let currentBorderColor = '';
+let currentBgColor = '';
+let currentMsg = '';
+let currentActions = [];
+
+function render() {
+  const container = document.getElementById('questions');
+  container.innerHTML = '';
+  questions.forEach((q, qi) => {
+    const block = document.createElement('div');
+    block.className = 'q-block';
+    block.innerHTML = '<span class="q-label"><span class="q-num">' + (qi + 1) + '</span>' + q.q + '</span><div class="options" id="opts' + qi + '"></div>';
+    container.appendChild(block);
+    q.opts.forEach((o, oi) => {
+      const opt = document.createElement('label');
+      opt.className = 'opt' + (answers[qi] === oi ? ' selected' : '');
+      opt.innerHTML = '<input type="radio" name="q' + qi + '" value="' + oi + '"><div class="dot"></div>' + o.text;
+      opt.onclick = () => select(qi, oi);
+      document.getElementById('opts' + qi).appendChild(opt);
+    });
+  });
+  updateProgress();
+  updateBtn();
+}
+
+function select(qi, oi) {
+  answers[qi] = oi;
+  const opts = document.querySelectorAll('#opts' + qi + ' .opt');
+  opts.forEach((o, i) => o.classList.toggle('selected', i === oi));
+  updateProgress();
+  updateBtn();
+}
+
+function updateProgress() {
+  answers.forEach((a, i) => {
+    document.getElementById('pd' + i).classList.toggle('done', a !== null);
+  });
+}
+
+function updateBtn() {
+  document.getElementById('calcBtn').disabled = answers.some(a => a === null);
+}
+
+function computeScore() {
+  const total = answers.reduce((sum, ai, qi) => sum + questions[qi].opts[ai].score, 0);
+  const max = questions.length * 3;
+  currentPct = Math.round((total / max) * 100);
+
+  if (currentPct <= 20) {
+    currentRisk = 'Low risk';
+    currentColor = '#0F6E56'; currentBorderColor = '#1D9E75'; currentBgColor = '#E1F5EE';
+    currentMsg = 'This client looks healthy. They\'re engaged, they see the work, and trust is strong. Keep communication consistent and document your wins weekly.';
+    currentActions = [
+      'Send a weekly update even when nothing dramatic happened',
+      'Ask for a testimonial while sentiment is high',
+      'Introduce them to the POW dashboard to lock in long-term trust'
+    ];
+  } else if (currentPct <= 45) {
+    currentRisk = 'Watch closely';
+    currentColor = '#854F0B'; currentBorderColor = '#EF9F27'; currentBgColor = '#FAEEDA';
+    currentMsg = 'There are early warning signs. This client may be starting to question value. Increase visibility now — before silence turns into a cancellation email.';
+    currentActions = [
+      'Send a mid-week update this week — don\'t wait for the monthly report',
+      'Schedule a quick 15-min check-in call within 7 days',
+      'Create a simple "work done this week" summary and send it unprompted',
+      'Start documenting every task completed for this client'
+    ];
+  } else if (currentPct <= 70) {
+    currentRisk = 'High risk';
+    currentColor = '#993C1D'; currentBorderColor = '#D85A30'; currentBgColor = '#FAECE7';
+    currentMsg = 'This client is likely questioning whether to stay. They can\'t see the work clearly and may already be looking at alternatives. Act fast.';
+    currentActions = [
+      'Call them today — not email, not Slack. Call.',
+      'Prepare a "proof of work" document showing everything done in the last 30 days',
+      'Acknowledge the communication gap directly — don\'t avoid it',
+      'Set up a weekly visibility touchpoint immediately',
+      'Show them what\'s coming next — clients stay when they see a plan'
+    ];
+  } else {
+    currentRisk = 'Critical — act now';
+    currentColor = '#A32D2D'; currentBorderColor = '#E24B4A'; currentBgColor = '#FCEBEB';
+    currentMsg = 'This client is very close to cancelling. Multiple red flags are active. Your next communication needs to show undeniable proof of work — immediately.';
+    currentActions = [
+      'Stop everything and call them today',
+      'Prepare a full results summary for the last 60 days before the call',
+      'Acknowledge the problem directly — clients respect honesty',
+      'Offer a free strategy session to re-align on goals',
+      'Show them a live demo of what weekly visibility looks like going forward',
+      'Have a retention offer ready if needed'
+    ];
+  }
+}
+
+function scoreRingHTML(small) {
+  var size = small ? '80px' : '110px';
+  var fontSize = small ? '22px' : '30px';
+  return '<div class="score-ring" style="width:' + size + ';height:' + size + ';border-color:' + currentBorderColor + ';background:' + currentBgColor + ';">' +
+    '<span class="score-num" style="font-size:' + fontSize + ';color:' + currentColor + ';">' + currentPct + '%</span>' +
+    '<span class="score-sub" style="color:' + currentColor + ';">churn risk</span>' +
+    '</div>';
+}
+
+function showScoreReveal() {
+  computeScore();
+
+  const top = document.getElementById('scoreRevealTop');
+  top.innerHTML =
+    scoreRingHTML(false) +
+    '<div class="risk-tag" style="background:' + currentBgColor + ';color:' + currentColor + ';">' + currentRisk + '</div>' +
+    '<p class="result-msg">' + currentMsg + '</p>';
+
+  document.getElementById('scoreReveal').style.display = 'block';
+  document.getElementById('calcBtn').style.display = 'none';
+  document.getElementById('scoreReveal').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function submitLead() {
+  const firstName = document.getElementById('firstName').value.trim();
+  const agencyName = document.getElementById('agencyName').value.trim();
+  const email = document.getElementById('emailInput').value.trim();
+  const errorMsg = document.getElementById('errorMsg');
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  if (!firstName || !agencyName || !email || !emailValid) {
+    errorMsg.style.display = 'block';
+    return;
+  }
+
+  errorMsg.style.display = 'none';
+
+  // Send to Brevo or your email service here
+  // fetch('YOUR_BREVO_API_ENDPOINT', { method: 'POST', ... })
+
+  console.log('Lead captured:', { firstName, agencyName, email, score: currentPct, risk: currentRisk });
+
+  showFullResult(firstName);
+}
+
+function skipGate() {
+  showFullResult(null);
+}
+
+function showFullResult(firstName) {
+  const greeting = firstName ? 'Here\'s your action plan, ' + firstName + '.' : 'Here\'s your action plan.';
+
+  let actionsHTML = '<ul class="action-list">';
+  currentActions.forEach(a => { actionsHTML += '<li>' + a + '</li>'; });
+  actionsHTML += '</ul>';
+
+  document.getElementById('resultTop').innerHTML =
+    scoreRingHTML(false) +
+    '<div class="risk-tag" style="background:' + currentBgColor + ';color:' + currentColor + ';">' + currentRisk + '</div>' +
+    '<p class="result-msg">' + currentMsg + '</p>';
+
+  document.getElementById('resultBottom').innerHTML =
+    '<p style="font-weight:600;color:#1a1a1a;font-size:15px;margin-bottom:12px;">' + greeting + '</p>' +
+    actionsHTML +
+    '<p style="margin-top:16px;">See what your client sees — or doesn\'t see — every week. Albetora makes invisible work visible, automatically.</p>' +
+    '<a class="cta-btn" href="https://albetora.com/POW.html" target="_blank">See the POW dashboard demo</a>' +
+    '<a class="cta-secondary" href="https://calendly.com/codebygs/30min" target="_blank">Book a free 15-min call</a>' +
+    '<button class="reset-btn" onclick="reset()">↩ Test another client</button>';
+
+  document.getElementById('scoreReveal').style.display = 'none';
+  document.getElementById('result').style.display = 'block';
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function reset() {
+  answers.fill(null);
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('scoreReveal').style.display = 'none';
+  document.getElementById('calcBtn').style.display = 'block';
+  document.getElementById('firstName').value = '';
+  document.getElementById('agencyName').value = '';
+  document.getElementById('emailInput').value = '';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+render();
+</script>
+</body>
+</html>
