@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Visibly — AI Search Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:#08090d;color:#e8eaf2;font-size:13px}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#252a3d;border-radius:4px}
+input,select,textarea,button{font-family:'Inter',sans-serif}
+button{cursor:pointer;border:none;transition:all .15s}
+a{text-decoration:none;color:inherit}
+
+/* Layout */
+#app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:220px;background:#10121a;border-right:1px solid #1f2333;display:flex;flex-direction:column;flex-shrink:0}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{padding:12px 24px;border-bottom:1px solid #1f2333;background:#10121a;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.page{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+.hidden{display:none!important}
+
+/* Logo */
+.logo{padding:18px 18px 14px;border-bottom:1px solid #1f2333;display:flex;align-items:center;gap:10px}
+.logo-icon{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#6c63ff,#a78bfa);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.logo-text{font-family:'Sora',sans-serif;font-weight:700;font-size:16px;background:linear-gradient(135deg,#fff 60%,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.logo-badge{font-size:9px;background:#6c63ff;color:#fff;border-radius:3px;padding:2px 6px;font-weight:700;letter-spacing:.5px;margin-left:auto}
+
+/* Nav */
+.nav-scroll{flex:1;overflow-y:auto;padding:8px 0}
+.nav-section-label{padding:12px 12px 4px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#4a5068;font-weight:600}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;margin:1px 8px;border-radius:8px;cursor:pointer;color:#7b82a0;font-size:13px;font-weight:500;transition:all .15s;position:relative;user-select:none}
+.nav-item:hover{background:#181b27;color:#e8eaf2}
+.nav-item.active{background:rgba(108,99,255,.12);color:#a78bfa}
+.nav-item.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:18px;background:#6c63ff;border-radius:0 3px 3px 0}
+.nav-icon{font-size:15px;width:18px;text-align:center}
+.nav-badge{margin-left:auto;background:#6c63ff;color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700}
+.nav-badge.orange{background:#f97316}
+.nav-badge.green{background:#4ade80;color:#000}
+
+/* Sidebar bottom */
+.sidebar-bottom{padding:12px;border-top:1px solid #1f2333}
+.user-card{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;cursor:pointer;transition:background .15s}
+.user-card:hover{background:#181b27}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#6c63ff,#ec4899);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0}
+
+/* Cards */
+.card{background:#10121a;border:1px solid #1f2333;border-radius:12px;overflow:hidden}
+.card-header{padding:14px 18px;border-bottom:1px solid #1f2333;display:flex;align-items:center;gap:10px}
+.card-title{font-family:'Sora',sans-serif;font-weight:700;font-size:13px}
+.card-sub{font-size:11px;color:#7b82a0}
+.card-body{padding:14px 18px}
+.card-action{margin-left:auto;font-size:11px;color:#6c63ff;cursor:pointer;font-weight:600;background:none;border:1px solid rgba(108,99,255,.3);border-radius:7px;padding:4px 10px}
+.card-action:hover{background:rgba(108,99,255,.1)}
+
+/* Buttons */
+.btn{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;border:none;transition:all .15s}
+.btn-primary{background:linear-gradient(135deg,#6c63ff,#a78bfa);color:#fff;box-shadow:0 4px 15px rgba(108,99,255,.3)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,99,255,.4)}
+.btn-ghost{background:transparent;color:#7b82a0;border:1px solid #252a3d}
+.btn-ghost:hover{background:#181b27;color:#e8eaf2}
+.btn-success{background:linear-gradient(135deg,#4ade80,#22d3ee);color:#000;font-weight:700}
+.btn-success:hover{transform:translateY(-1px)}
+.btn-danger{background:rgba(248,113,113,.08);color:#f87171;border:1px solid rgba(248,113,113,.2)}
+.btn-sm{padding:5px 12px;font-size:11px}
+.btn-xs{padding:3px 10px;font-size:10px;border-radius:6px}
+
+/* Tags */
+.tag{display:inline-flex;align-items:center;font-size:10px;padding:2px 8px;border-radius:5px;font-weight:600}
+.tag-purple{background:rgba(108,99,255,.15);color:#a78bfa}
+.tag-green{background:rgba(74,222,128,.12);color:#4ade80}
+.tag-orange{background:rgba(249,115,22,.12);color:#f97316}
+.tag-yellow{background:rgba(251,191,36,.12);color:#fbbf24}
+.tag-red{background:rgba(248,113,113,.12);color:#f87171}
+.tag-muted{background:#1f2333;color:#4a5068}
+.tag-blue{background:rgba(56,189,248,.12);color:#38bdf8}
+
+/* Stat cards */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat-card{background:#10121a;border:1px solid #1f2333;border-radius:12px;padding:16px;position:relative;overflow:hidden}
+.stat-top-bar{position:absolute;top:0;left:0;right:0;height:2px}
+.stat-label{font-size:10px;color:#7b82a0;text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:8px}
+.stat-value{font-family:'Sora',sans-serif;font-size:28px;font-weight:800;line-height:1;margin-bottom:6px}
+.stat-delta{font-size:11px;display:flex;align-items:center;gap:4px}
+.delta-up{color:#4ade80}
+.delta-down{color:#f87171}
+
+/* Table */
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:#4a5068;padding:10px 14px;font-weight:600;white-space:nowrap;border-bottom:1px solid #1f2333}
+.data-table td{padding:10px 14px;vertical-align:middle;border-bottom:1px solid #1f2333}
+.data-table tr:last-child td{border-bottom:none}
+.data-table tbody tr{cursor:pointer;transition:background .12s}
+.data-table tbody tr:hover td{background:rgba(255,255,255,.015)}
+
+/* Coverage bar */
+.cov-bar-wrap{width:80px}
+.cov-bar{height:4px;background:#1f2333;border-radius:4px;overflow:hidden;margin-bottom:3px}
+.cov-fill{height:100%;border-radius:4px;transition:width .4s}
+.cov-high{background:linear-gradient(90deg,#4ade80,#22d3ee)}
+.cov-mid{background:linear-gradient(90deg,#fbbf24,#f97316)}
+.cov-low{background:linear-gradient(90deg,#f87171,#ec4899)}
+
+/* Engine dots */
+.engine-dots{display:flex;gap:3px}
+.eng-dot{width:22px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.eng-hit{background:rgba(74,222,128,.12);color:#4ade80}
+.eng-miss{background:rgba(255,255,255,.04);color:#4a5068}
+
+/* Fix queue */
+.fix-panel{background:linear-gradient(135deg,rgba(108,99,255,.06),rgba(167,139,250,.03));border:1px solid rgba(108,99,255,.2);border-radius:12px;overflow:hidden}
+.fix-item{background:#181b27;border:1px solid #252a3d;border-radius:10px;overflow:hidden;transition:border-color .15s}
+.fix-item:hover{border-color:#6c63ff}
+.fix-header{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;cursor:pointer}
+.fix-body{border-top:1px solid #1f2333;padding:14px 16px;background:#10121a;display:none}
+.fix-body.open{display:block}
+.fix-priority{font-size:10px;font-weight:700;padding:3px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.pri-high{background:rgba(249,115,22,.15);color:#f97316}
+.pri-med{background:rgba(251,191,36,.15);color:#fbbf24}
+.pri-quick{background:rgba(74,222,128,.15);color:#4ade80}
+
+/* Chart bars */
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:110px}
+.bar-group{flex:1;display:flex;gap:2px;align-items:flex-end;height:100%}
+.bar-you{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(180deg,#6c63ff,rgba(108,99,255,.4));min-height:4px;transition:height .4s}
+.bar-comp{flex:1;border-radius:3px 3px 0 0;background:rgba(255,255,255,.07);min-height:4px;transition:height .4s}
+.chart-labels{display:flex;gap:6px;margin-top:6px}
+.chart-label{flex:1;text-align:center;font-size:9px;color:#4a5068}
+
+/* Engine cards */
+.engine-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+.engine-card{background:#181b27;border:1px solid #252a3d;border-radius:10px;padding:12px;display:flex;align-items:center;gap:10px}
+
+/* Donut */
+.donut-wrap{display:flex;align-items:center;gap:16px;padding:14px 18px}
+
+/* Citation row */
+.cite-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #1f2333}
+.cite-row:last-child{border-bottom:none}
+
+/* Toggle */
+.toggle{width:42px;height:24px;border-radius:12px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0}
+.toggle-knob{position:absolute;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s}
+
+/* Modal */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px}
+.modal-box{background:#10121a;border:1px solid #252a3d;border-radius:16px;width:100%;max-width:540px;max-height:85vh;overflow:auto;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.modal-header{padding:16px 20px;border-bottom:1px solid #1f2333;display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'Sora',sans-serif;font-weight:700;font-size:15px}
+.modal-close{background:none;border:none;color:#7b82a0;font-size:20px;cursor:pointer;line-height:1;padding:0 4px}
+.modal-body{padding:20px;display:flex;flex-direction:column;gap:14px}
+
+/* Toast */
+#toast-container{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{padding:10px 16px;border-radius:10px;font-size:12px;font-weight:600;max-width:300px;display:flex;align-items:center;gap:8px;animation:toastIn .2s ease;pointer-events:auto;cursor:pointer;backdrop-filter:blur(10px)}
+.toast-success{background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:#4ade80}
+.toast-info{background:rgba(108,99,255,.12);border:1px solid rgba(108,99,255,.3);color:#a78bfa}
+.toast-error{background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.3);color:#f87171}
+@keyframes toastIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Misc */
+.alert-banner{background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.25);border-radius:10px;padding:12px 16px;display:flex;align-items:center;gap:12px}
+.alert-dot{width:8px;height:8px;border-radius:50%;background:#f97316;box-shadow:0 0 8px #f97316;flex-shrink:0;animation:pulse 2s infinite}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.three-col{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.form-label{font-size:11px;color:#7b82a0;font-weight:600;display:block;margin-bottom:6px}
+.form-input{width:100%;background:#181b27;border:1px solid #252a3d;border-radius:8px;padding:9px 12px;color:#e8eaf2;font-size:13px;outline:none;transition:border-color .15s}
+.form-input:focus{border-color:#6c63ff}
+.row{display:flex;align-items:center;gap:10px}
+.spacer{flex:1}
+.separator{height:1px;background:#1f2333;margin:4px 0}
+.section-header{font-family:'Sora',sans-serif;font-weight:700;font-size:18px;margin-bottom:2px}
+.section-sub{font-size:12px;color:#7b82a0}
+.new-badge{font-size:9px;background:linear-gradient(135deg,#4ade80,#22d3ee);color:#000;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:.5px}
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center;gap:12px}
+.empty-icon{font-size:48px}
+.topbar-title{font-family:'Sora',sans-serif;font-size:15px;font-weight:700}
+.topbar-sub{font-size:12px;color:#7b82a0;margin-left:4px}
+.notif-dot{position:absolute;top:4px;right:4px;width:6px;height:6px;border-radius:50%;background:#f97316}
+.icon-btn{background:transparent;border:1px solid #252a3d;color:#7b82a0;border-radius:8px;padding:6px 10px;position:relative;font-size:13px}
+.icon-btn:hover{background:#181b27;color:#e8eaf2}
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ══ SIDEBAR ══ -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">✦</div>
+      <span class="logo-text">Visibly</span>
+      <span class="logo-badge">BETA</span>
+    </div>
+
+    <div class="nav-scroll">
+      <div class="nav-section-label">Monitor</div>
+      <div class="nav-item active" data-page="overview"><span class="nav-icon">◉</span> Overview</div>
+      <div class="nav-item" data-page="prompts"><span class="nav-icon">⊞</span> Prompt Tracking <span class="nav-badge">47</span></div>
+      <div class="nav-item" data-page="mentions"><span class="nav-icon">◈</span> Brand Mentions</div>
+      <div class="nav-item" data-page="citations"><span class="nav-icon">⬡</span> Citation Sources</div>
+      <div class="nav-item" data-page="competitors"><span class="nav-icon">⊕</span> Competitors <span class="nav-badge">5</span></div>
+
+      <div class="nav-section-label">Optimize</div>
+      <div class="nav-item" data-page="fixes"><span class="nav-icon">⚡</span> Fix Queue <span class="nav-badge orange">12</span></div>
+      <div class="nav-item" data-page="writer"><span class="nav-icon">✏️</span> Content Writer <span class="nav-badge green">NEW</span></div>
+      <div class="nav-item" data-page="audit"><span class="nav-icon">🔬</span> GEO Audit</div>
+      <div class="nav-item" data-page="reports"><span class="nav-icon">📊</span> Reports</div>
+
+      <div class="nav-section-label">Account</div>
+      <div class="nav-item" data-page="settings"><span class="nav-icon">⚙</span> Workspace</div>
+      <div class="nav-item" data-page="integrations"><span class="nav-icon">🔗</span> Integrations</div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <div class="user-card" data-page="settings" onclick="navigate('settings')">
+        <div class="avatar">A</div>
+        <div>
+          <div style="font-size:12px;font-weight:600">Alex Morgan</div>
+          <div style="font-size:10px;color:#7b82a0">Pro · 87/100 prompts</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+
+    <header class="topbar">
+      <div>
+        <span class="topbar-title" id="topbar-title">Overview</span>
+        <span class="topbar-sub">— acme.com</span>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn icon-btn" onclick="showToast('No new notifications','info')" title="Notifications" style="position:relative">
+        🔔<div class="notif-dot"></div>
+      </button>
+      <button class="btn icon-btn" onclick="navigate('settings')" title="Settings">⚙</button>
+    </header>
+
+    <!-- ══ PAGES ══ -->
+
+    <!-- OVERVIEW -->
+    <div id="page-overview" class="page">
+
+      <!-- Alert Banner -->
+      <div class="alert-banner" id="alert-banner">
+        <div class="alert-dot"></div>
+        <div style="font-size:12px;color:#fcd34d;flex:1">
+          <strong style="color:#f97316">Visibility drop:</strong> "best PM tool for remote teams" — fell #2→#5 in ChatGPT. <strong>Notion</strong> is now #1.
+        </div>
+        <button class="btn btn-sm" style="background:rgba(249,115,22,.15);color:#f97316;border:1px solid rgba(249,115,22,.3)" onclick="navigate('fixes')">Fix this →</button>
+        <button style="background:none;border:none;color:#4a5068;font-size:18px;cursor:pointer;padding:0 4px;line-height:1" onclick="document.getElementById('alert-banner').remove()">&times;</button>
+      </div>
+
+      <!-- Time + Engine filter bar -->
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        <div style="display:flex;gap:2px;background:#181b27;padding:3px;border-radius:9px;border:1px solid #1f2333">
+          <button class="btn btn-sm time-btn active" data-range="7d">7 days</button>
+          <button class="btn btn-sm time-btn" data-range="30d">30 days</button>
+          <button class="btn btn-sm time-btn" data-range="90d">90 days</button>
+        </div>
+        <select id="engine-filter" class="form-input" style="width:auto;padding:6px 12px">
+          <option value="all">All Engines</option>
+          <option value="chatgpt">ChatGPT</option>
+          <option value="perplexity">Perplexity</option>
+          <option value="googleai">Google AI</option>
+          <option value="copilot">Copilot</option>
+        </select>
+        <div class="spacer"></div>
+        <button class="btn btn-ghost" onclick="showToast('Report exported as PDF','success')">↑ Export</button>
+        <button class="btn btn-primary" onclick="openModal('modal-add-prompt')">+ Add Prompt</button>
+      </div>
+
+      <!-- Stat Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-top-bar" style="background:linear-gradient(90deg,#6c63ff,#a78bfa)"></div>
+          <div class="stat-label">AI Share of Voice</div>
+          <div class="stat-value" style="color:#a78bfa">38<span style="font-size:16px">%</span></div>
+          <div class="stat-delta delta-up">▲ +4.2% vs last week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top-bar" style="background:linear-gradient(90deg,#4ade80,#22d3ee)"></div>
+          <div class="stat-label">Brand Mentions</div>
+          <div class="stat-value" style="color:#4ade80">1,247</div>
+          <div class="stat-delta delta-up">▲ +183 this week</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top-bar" style="background:linear-gradient(90deg,#f97316,#fbbf24)"></div>
+          <div class="stat-label">Prompts Winning</div>
+          <div class="stat-value" style="color:#f97316">31<span style="font-size:16px">/47</span></div>
+          <div class="stat-delta delta-down">▼ Lost 2 to competitors</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-top-bar" style="background:linear-gradient(90deg,#38bdf8,#818cf8)"></div>
+          <div class="stat-label">Citations Earned</div>
+          <div class="stat-value" style="color:#38bdf8">89</div>
+          <div class="stat-delta delta-up">▲ +12 new domains</div>
+        </div>
+      </div>
+
+      <!-- Chart + Engine row -->
+      <div class="two-col">
+        <!-- Chart -->
+        <div class="card">
+          <div class="card-header">
+            <span>📈</span>
+            <div><div class="card-title">Visibility vs Competitors</div><div class="card-sub">Daily share across tracked prompts</div></div>
+            <div style="margin-left:auto;display:flex;gap:12px;font-size:11px;color:#7b82a0">
+              <span><span style="color:#6c63ff">■</span> You</span>
+              <span><span style="color:#252a3d">■</span> Avg Competitor</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="chart-bars" id="main-chart">
+              <!-- Bars rendered by JS -->
+            </div>
+            <div class="chart-labels" id="chart-labels"></div>
+          </div>
+        </div>
+
+        <!-- Engines -->
+        <div class="card">
+          <div class="card-header">
+            <span>🤖</span>
+            <div><div class="card-title">Per-Engine Visibility</div><div class="card-sub">Your mention rate by platform</div></div>
+          </div>
+          <div class="engine-grid">
+            <div class="engine-card">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(74,222,128,.1);display:flex;align-items:center;justify-content:center;font-size:18px">🟢</div>
+              <div><div style="font-size:11px;color:#7b82a0">ChatGPT</div><div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#4ade80">62%</div></div>
+              <div style="margin-left:auto;font-size:11px;font-weight:600;color:#4ade80">▲6%</div>
+            </div>
+            <div class="engine-card">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(56,189,248,.1);display:flex;align-items:center;justify-content:center;font-size:18px">🔵</div>
+              <div><div style="font-size:11px;color:#7b82a0">Perplexity</div><div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#38bdf8">44%</div></div>
+              <div style="margin-left:auto;font-size:11px;font-weight:600;color:#4ade80">▲2%</div>
+            </div>
+            <div class="engine-card">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(249,115,22,.1);display:flex;align-items:center;justify-content:center;font-size:18px">🔶</div>
+              <div><div style="font-size:11px;color:#7b82a0">Google AI</div><div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#f97316">31%</div></div>
+              <div style="margin-left:auto;font-size:11px;font-weight:600;color:#f87171">▼3%</div>
+            </div>
+            <div class="engine-card">
+              <div style="width:32px;height:32px;border-radius:8px;background:rgba(167,139,250,.1);display:flex;align-items:center;justify-content:center;font-size:18px">🟣</div>
+              <div><div style="font-size:11px;color:#7b82a0">Copilot</div><div style="font-family:'Sora',sans-serif;font-size:20px;font-weight:800;color:#a78bfa">28%</div></div>
+              <div style="margin-left:auto;font-size:11px;font-weight:600;color:#4ade80">▲1%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prompt preview table -->
+      <div class="card">
+        <div class="card-header">
+          <span>⊞</span>
+          <div><div class="card-title">Top Prompt Performance</div><div class="card-sub">Your tracked queries — click any row for detail</div></div>
+          <div style="display:flex;gap:8px;align-items:center;margin-left:auto">
+            <span class="tag tag-orange">16 losing</span>
+            <span class="tag tag-green">31 winning</span>
+            <button class="card-action" onclick="navigate('prompts')">View all 47 →</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="data-table" id="overview-prompt-table"></table>
+        </div>
+      </div>
+
+      <!-- Citations + Sentiment -->
+      <div class="two-col" style="padding-bottom:20px">
+        <div class="card">
+          <div class="card-header">
+            <span>🔗</span>
+            <div><div class="card-title">Top Citation Sources</div><div class="card-sub">Where AI pulls category answers from</div></div>
+            <button class="card-action" onclick="navigate('citations')">View all →</button>
+          </div>
+          <div class="card-body" style="padding:8px 18px 14px" id="overview-citations"></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <span>🎯</span>
+            <div><div class="card-title">Brand Sentiment</div><div class="card-sub">How AI engines describe you</div></div>
+          </div>
+          <div class="donut-wrap">
+            <svg width="96" height="96" viewBox="0 0 80 80">
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#252a3d" stroke-width="8"/>
+              <circle cx="40" cy="40" r="32" fill="none" stroke="#4ade80" stroke-width="8"
+                stroke-dasharray="120.6 200.9" stroke-dashoffset="50.2" stroke-linecap="round"/>
+              <text x="40" y="44" text-anchor="middle" fill="#4ade80" font-size="14" font-weight="800" font-family="Sora,sans-serif">60%</text>
+            </svg>
+            <div style="flex:1">
+              <div style="margin-bottom:8px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="color:#7b82a0">Positive</span><span style="font-weight:700;color:#4ade80">60%</span></div>
+                <div style="height:4px;background:#1f2333;border-radius:4px"><div style="height:100%;width:60%;background:#4ade80;border-radius:4px"></div></div>
+              </div>
+              <div style="margin-bottom:8px">
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="color:#7b82a0">Neutral</span><span style="font-weight:700;color:#fbbf24">15%</span></div>
+                <div style="height:4px;background:#1f2333;border-radius:4px"><div style="height:100%;width:15%;background:#fbbf24;border-radius:4px"></div></div>
+              </div>
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span style="color:#7b82a0">Negative</span><span style="font-weight:700;color:#f87171">25%</span></div>
+                <div style="height:4px;background:#1f2333;border-radius:4px"><div style="height:100%;width:25%;background:#f87171;border-radius:4px"></div></div>
+              </div>
+            </div>
+          </div>
+          <div style="padding:10px 18px 14px;border-top:1px solid #1f2333">
+            <div style="font-size:11px;color:#7b82a0;font-weight:600;margin-bottom:8px">AI describes you as:</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              <span class="tag tag-green">easy to use</span>
+              <span class="tag tag-green">affordable</span>
+              <span class="tag tag-green">good for teams</span>
+              <span class="tag tag-orange">limited integrations</span>
+              <span class="tag tag-orange">steep learning curve</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROMPT TRACKING -->
+    <div id="page-prompts" class="page hidden">
+      <div class="row">
+        <div>
+          <div class="section-header">Prompt Tracking</div>
+          <div class="section-sub">All 47 tracked queries across AI search engines</div>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn btn-ghost" onclick="showToast('Exported as CSV','success')">↑ Export</button>
+        <button class="btn btn-primary" onclick="openModal('modal-add-prompt')">+ Add Prompt</button>
+      </div>
+      <div class="row" style="flex-wrap:wrap;gap:8px">
+        <div style="position:relative;flex:1;min-width:200px">
+          <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#7b82a0">🔍</span>
+          <input id="prompt-search" class="form-input" style="padding-left:36px" placeholder="Search prompts…" oninput="renderPromptTable()">
+        </div>
+        <div style="display:flex;gap:2px;background:#181b27;padding:3px;border-radius:9px;border:1px solid #1f2333">
+          <button class="btn btn-sm filter-btn active" data-filter="all">All</button>
+          <button class="btn btn-sm filter-btn" data-filter="winning">Winning</button>
+          <button class="btn btn-sm filter-btn" data-filter="neutral">Neutral</button>
+          <button class="btn btn-sm filter-btn" data-filter="losing">Losing</button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:20px">
+        <div style="overflow-x:auto">
+          <table class="data-table" id="prompts-table"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- BRAND MENTIONS -->
+    <div id="page-mentions" class="page hidden">
+      <div class="row"><div><div class="section-header">Brand Mentions</div><div class="section-sub">Every time AI engines reference your brand name</div></div><div class="spacer"></div><button class="btn btn-ghost" onclick="showToast('Mentions exported','success')">↑ Export</button></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-top-bar" style="background:linear-gradient(90deg,#6c63ff,#a78bfa)"></div><div class="stat-label">Total Mentions</div><div class="stat-value" style="color:#a78bfa">1,247</div><div class="stat-delta delta-up">▲ 183 this week</div></div>
+        <div class="stat-card"><div class="stat-top-bar" style="background:linear-gradient(90deg,#4ade80,#22d3ee)"></div><div class="stat-label">Positive Mentions</div><div class="stat-value" style="color:#4ade80">748</div><div class="stat-delta delta-up">▲ 60%</div></div>
+        <div class="stat-card"><div class="stat-top-bar" style="background:linear-gradient(90deg,#f87171,#ec4899)"></div><div class="stat-label">Negative Mentions</div><div class="stat-value" style="color:#f87171">312</div><div class="stat-delta delta-down">▼ 25%</div></div>
+        <div class="stat-card"><div class="stat-top-bar" style="background:linear-gradient(90deg,#fbbf24,#f97316)"></div><div class="stat-label">Neutral</div><div class="stat-value" style="color:#fbbf24">187</div><div class="stat-delta" style="color:#7b82a0">— 15%</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span>🔍</span><div><div class="card-title">Recent Mention Log</div><div class="card-sub">AI responses that mentioned your brand this week</div></div></div>
+        <div style="padding:0 18px 14px" id="mentions-log"></div>
+      </div>
+    </div>
+
+    <!-- CITATIONS -->
+    <div id="page-citations" class="page hidden">
+      <div class="row"><div><div class="section-header">Citation Sources</div><div class="section-sub">Every domain AI engines cite when answering questions in your category</div></div><div class="spacer"></div><button class="btn btn-ghost" onclick="showToast('Citations exported','success')">↑ Export</button></div>
+      <div class="card" style="margin-bottom:20px">
+        <div style="overflow-x:auto">
+          <table class="data-table" id="citations-table"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- COMPETITORS -->
+    <div id="page-competitors" class="page hidden">
+      <div class="row">
+        <div><div class="section-header">Competitors</div><div class="section-sub">AI Share of Voice benchmarked across 5 competitors</div></div>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" onclick="openModal('modal-add-competitor')">+ Add Competitor</button>
+      </div>
+      <div class="card" style="margin-bottom:20px">
+        <div style="overflow-x:auto">
+          <table class="data-table" id="competitors-table"></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- FIX QUEUE -->
+    <div id="page-fixes" class="page hidden">
+      <div class="row">
+        <div>
+          <div class="section-header">Fix Queue</div>
+          <div class="section-sub">Prioritized actions to improve your AI visibility — with AI-generated content briefs</div>
+        </div>
+        <div class="spacer"></div>
+        <span class="tag tag-orange" style="font-size:11px;padding:4px 10px">3 HIGH</span>
+        <span class="tag tag-yellow" style="font-size:11px;padding:4px 10px">2 MED</span>
+        <span class="tag tag-green" style="font-size:11px;padding:4px 10px">1 QUICK</span>
+      </div>
+      <div style="background:rgba(108,99,255,.06);border:1px solid rgba(108,99,255,.2);border-radius:12px;padding:12px 16px;font-size:12px;color:#a78bfa">
+        ✦ <strong>Execution Layer</strong> — Each fix includes an AI-generated content brief or step-by-step guide. Click <em>"Draft with AI"</em> on any item to generate it instantly.
+      </div>
+      <div id="fix-list" style="display:flex;flex-direction:column;gap:10px;padding-bottom:20px"></div>
+    </div>
+
+    <!-- CONTENT WRITER -->
+    <div id="page-writer" class="page hidden">
+      <div class="row"><div><div class="section-header">Content Writer</div><div class="section-sub">Generate GEO-optimized content from your visibility gaps</div></div><div class="spacer"></div><span class="new-badge">NEW</span></div>
+      <div class="two-col">
+        <div class="card">
+          <div class="card-header"><span>📝</span><div><div class="card-title">New Content Brief</div><div class="card-sub">Describe what you want to write</div></div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+            <div><label class="form-label">Topic or Gap</label><input class="form-input" id="writer-topic" placeholder='e.g. "Asana alternative for small teams"'></div>
+            <div><label class="form-label">Target Engine</label>
+              <select class="form-input" id="writer-engine">
+                <option>ChatGPT</option><option>Perplexity</option><option>Google AI</option><option>All Engines</option>
+              </select>
+            </div>
+            <div><label class="form-label">Content Type</label>
+              <select class="form-input" id="writer-type">
+                <option>Comparison Page</option><option>FAQ Page</option><option>Feature Page</option><option>Landing Page</option><option>Blog Post</option>
+              </select>
+            </div>
+            <div><label class="form-label">Notes (optional)</label><textarea class="form-input" id="writer-notes" rows="3" placeholder="Any specific angles, competitors, or tone…"></textarea></div>
+            <button class="btn btn-success" onclick="generateBrief()">✦ Generate Brief</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span>✦</span><div><div class="card-title">Generated Brief</div><div class="card-sub">Your AI-powered content roadmap</div></div></div>
+          <div id="writer-output" class="card-body">
+            <div class="empty-state" style="padding:40px 20px">
+              <div class="empty-icon">✏️</div>
+              <div style="font-weight:600">No brief yet</div>
+              <div style="font-size:11px;color:#7b82a0">Fill in the form and click Generate Brief</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GEO AUDIT -->
+    <div id="page-audit" class="page hidden">
+      <div class="row">
+        <div><div class="section-header">GEO Audit</div><div class="section-sub">25-factor analysis of your AI citation readiness</div></div>
+        <div class="spacer"></div>
+        <div style="text-align:center">
+          <svg width="64" height="64" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#252a3d" stroke-width="8"/>
+            <circle cx="40" cy="40" r="32" fill="none" stroke="#fbbf24" stroke-width="8"
+              stroke-dasharray="125.7 200.9" stroke-dashoffset="50.2" stroke-linecap="round"/>
+            <text x="40" y="44" text-anchor="middle" fill="#fbbf24" font-size="14" font-weight="800" font-family="Sora,sans-serif">64</text>
+          </svg>
+          <div style="font-size:10px;color:#7b82a0;margin-top:4px">Overall Score</div>
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Audit report exported','success')">Export Report</button>
+      </div>
+      <div class="two-col" id="geo-audit-grid" style="padding-bottom:20px"></div>
+    </div>
+
+    <!-- REPORTS -->
+    <div id="page-reports" class="page hidden">
+      <div class="row">
+        <div><div class="section-header">Reports</div><div class="section-sub">Shareable stakeholder reports and data exports</div></div>
+        <div class="spacer"></div>
+        <button class="btn btn-primary" onclick="showToast('New report generating…','info')">+ New Report</button>
+      </div>
+      <div class="grid-3" id="reports-grid" style="padding-bottom:20px"></div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div id="page-settings" class="page hidden">
+      <div><div class="section-header">Workspace Settings</div><div class="section-sub">Manage your brand, notifications and preferences</div></div>
+      <div class="two-col" style="padding-bottom:20px">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <div class="card-header"><span>🏢</span><div><div class="card-title">Brand Settings</div></div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+              <div><label class="form-label">Primary Domain</label><input class="form-input" value="acme.com"></div>
+              <div><label class="form-label">Brand Name</label><input class="form-input" value="Acme Corp"></div>
+              <div><label class="form-label">Industry</label>
+                <select class="form-input"><option>SaaS / Project Management</option><option>E-commerce</option><option>Agency</option></select>
+              </div>
+              <button class="btn btn-primary" style="align-self:flex-start" onclick="showToast('Settings saved','success')">Save Changes</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span>🔔</span><div><div class="card-title">Notifications</div></div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+              <div id="notif-toggles"></div>
+              <div><label class="form-label">Alert Email</label><input class="form-input" value="alex@acme.com"></div>
+              <button class="btn btn-primary" style="align-self:flex-start" onclick="showToast('Notification preferences saved','success')">Save</button>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header"><span>🔗</span><div><div class="card-title">Integrations</div></div></div>
+          <div class="card-body" style="display:flex;flex-direction:column;gap:10px" id="integrations-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INTEGRATIONS (same as settings) -->
+    <div id="page-integrations" class="page hidden">
+      <div><div class="section-header">Integrations</div><div class="section-sub">Connect your marketing stack to Visibly</div></div>
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px" id="integrations-list-2"></div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<!-- ══ MODALS ══ -->
+
+<!-- Add Prompt -->
+<div id="modal-add-prompt" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('modal-add-prompt')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Add New Prompt</span>
+      <button class="modal-close" onclick="closeModal('modal-add-prompt')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div><label class="form-label">Prompt / Query</label>
+        <textarea id="new-prompt-text" class="form-input" rows="3" placeholder='"best project management tool for remote teams in 2025"'></textarea></div>
+      <div>
+        <label class="form-label">Track on Engines</label>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#7b82a0;cursor:pointer"><input type="checkbox" checked style="accent-color:#6c63ff"> ChatGPT</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#7b82a0;cursor:pointer"><input type="checkbox" checked style="accent-color:#6c63ff"> Perplexity</label>
+          <label style="display:flex;align-items:center;gap=6px;font-size:12px;color:#7b82a0;cursor:pointer"><input type="checkbox" checked style="accent-color:#6c63ff"> Google AI</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:#7b82a0;cursor:pointer"><input type="checkbox" style="accent-color:#6c63ff"> Copilot</label>
+        </div>
+      </div>
+      <div><label class="form-label">Category (optional)</label>
+        <select class="form-input"><option>Brand Awareness</option><option>Competitor Comparison</option><option>Feature Discovery</option><option>Use Case</option></select></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-add-prompt')">Cancel</button>
+        <button class="btn btn-primary" style="flex:2" onclick="addPrompt()">Start Tracking</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Competitor -->
+<div id="modal-add-competitor" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('modal-add-competitor')">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Add Competitor</span>
+      <button class="modal-close" onclick="closeModal('modal-add-competitor')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div><label class="form-label">Brand Name</label><input class="form-input" placeholder="e.g. Notion"></div>
+      <div><label class="form-label">Domain</label><input class="form-input" placeholder="e.g. notion.so"></div>
+      <div style="display:flex;gap:10px">
+        <button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-add-competitor')">Cancel</button>
+        <button class="btn btn-primary" style="flex:2" onclick="closeModal('modal-add-competitor');showToast('Competitor added — tracking starts tonight','success')">Add Competitor</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Prompt Detail -->
+<div id="modal-prompt-detail" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('modal-prompt-detail')">
+  <div class="modal-box" style="max-width:560px">
+    <div class="modal-header">
+      <span class="modal-title" id="detail-title">Prompt Detail</span>
+      <button class="modal-close" onclick="closeModal('modal-prompt-detail')">&times;</button>
+    </div>
+    <div class="modal-body" id="detail-body"></div>
+  </div>
+</div>
+
+<!-- Draft Modal -->
+<div id="modal-draft" class="modal-overlay hidden" onclick="if(event.target===this)closeModal('modal-draft')">
+  <div class="modal-box" style="max-width:620px">
+    <div class="modal-header">
+      <span class="modal-title" id="draft-title">AI Content Brief</span>
+      <button class="modal-close" onclick="closeModal('modal-draft')">&times;</button>
+    </div>
+    <div class="modal-body" id="draft-body"></div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container"></div>
+
+<script>
+// ══ DATA ══
+const PROMPTS=[
+  {id:1,name:'Best PM tool for remote teams',query:'"best project management software for remote teams"',engines:{C:1,P:1,G:0,B:0},cov:50,pos:3,trend:-2,status:'losing'},
+  {id:2,name:'Task management with AI',query:'"AI-powered task management tools in 2025"',engines:{C:1,P:1,G:1,B:1},cov:88,pos:1,trend:3,status:'winning'},
+  {id:3,name:'Alternative to Asana 2025',query:'"best asana alternatives for small teams"',engines:{C:0,P:1,G:0,B:0},cov:22,pos:8,trend:-5,status:'losing'},
+  {id:4,name:'Free project management tools',query:'"best free project management software"',engines:{C:1,P:1,G:1,B:0},cov:74,pos:2,trend:1,status:'winning'},
+  {id:5,name:'Kanban board software',query:'"best kanban board software for teams"',engines:{C:1,P:0,G:1,B:0},cov:55,pos:4,trend:0,status:'neutral'},
+  {id:6,name:'Monday.com alternative',query:'"monday.com alternatives that are cheaper"',engines:{C:0,P:0,G:0,B:0},cov:8,pos:14,trend:-3,status:'losing'},
+  {id:7,name:'Project tracking for startups',query:'"project tracking tools for early-stage startups"',engines:{C:1,P:1,G:1,B:1},cov:92,pos:1,trend:5,status:'winning'},
+  {id:8,name:'Team collaboration software',query:'"best team collaboration and project management tools"',engines:{C:0,P:1,G:0,B:1},cov:40,pos:6,trend:-1,status:'neutral'},
+];
+
+const CITATIONS=[
+  {rank:1,domain:'g2.com',label:'reviews',count:341,pct:100,yours:false},
+  {rank:2,domain:'reddit.com',label:'r/projectmgmt',count:247,pct:72,yours:false},
+  {rank:3,domain:'acme.com',label:'your site',count:189,pct:55,yours:true},
+  {rank:4,domain:'notion.so',label:'competitor',count:163,pct:48,yours:false},
+  {rank:5,domain:'capterra.com',label:'reviews',count:128,pct:38,yours:false},
+  {rank:6,domain:'techradar.com',label:'editorial',count:86,pct:25,yours:false},
+  {rank:7,domain:'forbes.com',label:'editorial',count:71,pct:21,yours:false},
+  {rank:8,domain:'producthunt.com',label:'community',count:54,pct:16,yours:false},
+];
+
+const COMPETITORS=[
+  {name:'Notion',domain:'notion.so',sov:52,mentions:2140,trend:4,engines:4,yours:false},
+  {name:'ClickUp',domain:'clickup.com',sov:45,mentions:1830,trend:2,engines:4,yours:false},
+  {name:'Monday.com',domain:'monday.com',sov:41,mentions:1620,trend:-1,engines:3,yours:false},
+  {name:'Asana',domain:'asana.com',sov:38,mentions:1480,trend:-3,engines:4,yours:false},
+  {name:'Acme (You)',domain:'acme.com',sov:38,mentions:1247,trend:4,engines:4,yours:true},
+  {name:'Trello',domain:'trello.com',sov:29,mentions:890,trend:-2,engines:2,yours:false},
+];
+
+const FIXES=[
+  {id:1,priority:'HIGH',priClass:'pri-high',title:'Write a comparison page vs Asana',desc:'ChatGPT cites notion.so/vs-asana 47× — you have no comparison page. This is why you rank #8 for "Asana alternative" queries.',type:'Content gap',engines:['ChatGPT'],impact:'+18% coverage est.',action:'draft'},
+  {id:2,priority:'HIGH',priClass:'pri-high',title:'Add FAQ schema to your pricing page',desc:'Google AI Overviews skips your pricing page — it lacks structured data. 3 competitors who added FAQ schema now rank above you.',type:'Technical',engines:['Google AI'],impact:'+12% Google AI est.',action:'guide'},
+  {id:3,priority:'MED',priClass:'pri-med',title:'Publish reviews on G2 and Capterra',desc:'Perplexity cites G2 reviews 23× in your category. Your G2 profile is sparse — this is a low-cost citation opportunity.',type:'3rd-party',engines:['Perplexity'],impact:'+9% Perplexity est.',action:'sources'},
+  {id:4,priority:'QUICK',priClass:'pri-quick',title:'Refresh the "What is acme?" page',desc:'Your about page hasn\'t been updated in 8 months. AI models strongly favor recently updated, authoritative brand definition pages.',type:'Freshness',engines:['All engines'],impact:'+5% all engines est.',action:'draft'},
+  {id:5,priority:'HIGH',priClass:'pri-high',title:'Create a Monday.com alternative page',desc:'You have zero presence for Monday.com alternative queries. Competitors Notion and ClickUp dominate this prompt category across all engines.',type:'Content gap',engines:['ChatGPT','Google AI'],impact:'+22% coverage est.',action:'draft'},
+  {id:6,priority:'MED',priClass:'pri-med',title:'Add structured data to feature pages',desc:'Feature pages lack HowTo and Product schema. Perplexity and Copilot prefer pages with structured, machine-readable content signals.',type:'Technical',engines:['Perplexity','Copilot'],impact:'+8% est.',action:'guide'},
+];
+
+const GEO_AUDIT=[
+  {category:'Content Structure',score:72,color:'#4ade80',items:[
+    {label:'FAQ sections on key pages',status:'pass',detail:'8 of 12 pages have FAQ sections'},
+    {label:'Direct question-answer format',status:'warn',detail:'Only 4 pages open with direct answers'},
+    {label:'Content freshness (< 90 days)',status:'fail',detail:'6 pages last updated > 6 months ago'},
+    {label:'Word count 800+ on target pages',status:'pass',detail:'All main pages exceed 800 words'},
+  ]},
+  {category:'Technical SEO',score:55,color:'#fbbf24',items:[
+    {label:'Structured data (JSON-LD)',status:'warn',detail:'Only homepage has schema markup'},
+    {label:'Open Graph tags complete',status:'fail',detail:'Missing OG tags on 9 pages'},
+    {label:'Page speed < 2s',status:'pass',detail:'Average 1.4s load time'},
+    {label:'Mobile-first responsive',status:'pass',detail:'All pages pass mobile test'},
+  ]},
+  {category:'Authority Signals',score:81,color:'#4ade80',items:[
+    {label:'Backlinks from cited domains',status:'pass',detail:'Links from G2, Capterra, TechRadar'},
+    {label:'Expert authorship on articles',status:'pass',detail:'9 of 11 articles have author bios'},
+    {label:'External citations of your content',status:'warn',detail:'34 external sites cite your content'},
+    {label:'Social proof / review signals',status:'pass',detail:'4.7★ aggregate rating visible'},
+  ]},
+  {category:'Entity & Semantic',score:48,color:'#f87171',items:[
+    {label:'Brand entity defined clearly',status:'warn',detail:'Brand definition is ambiguous on homepage'},
+    {label:'Competitor comparison coverage',status:'fail',detail:'Missing pages for 4 major competitors'},
+    {label:'Use case pages for key segments',status:'fail',detail:'Only 2 of 8 segments have dedicated pages'},
+    {label:'Topic cluster completeness',status:'warn',detail:'Pillar pages exist but cluster is thin'},
+  ]},
+];
+
+const REPORTS=[
+  {title:'Weekly Digest',date:'Jun 28, 2026',type:'PDF',icon:'📄',color:'#38bdf8'},
+  {title:'Monthly Performance',date:'Jun 1, 2026',type:'PDF',icon:'📊',color:'#4ade80'},
+  {title:'Competitor Analysis',date:'May 15, 2026',type:'PDF',icon:'⚔️',color:'#f97316'},
+  {title:'GEO Audit Report',date:'May 1, 2026',type:'PDF',icon:'🔬',color:'#a78bfa'},
+  {title:'Citation Sources',date:'Apr 28, 2026',type:'CSV',icon:'🔗',color:'#fbbf24'},
+  {title:'Prompt Export',date:'Apr 15, 2026',type:'CSV',icon:'⊞',color:'#7b82a0'},
+];
+
+const MENTIONS_SAMPLE=[
+  {engine:'ChatGPT',query:'What is the best project management tool?',text:'Acme is frequently mentioned as a top choice for teams needing a simple, affordable PM tool.',sentiment:'positive',date:'Today, 2:14 PM'},
+  {engine:'Perplexity',query:'Free alternatives to Monday.com',text:'Acme offers a generous free tier with unlimited tasks, making it a popular Monday.com alternative.',sentiment:'positive',date:'Today, 11:30 AM'},
+  {engine:'Google AI',query:'Best PM software with Slack integration',text:'While Acme has Slack integration, users note it can be limited compared to ClickUp or Asana.',sentiment:'negative',date:'Yesterday, 4:52 PM'},
+  {engine:'ChatGPT',query:'Tools like Asana but cheaper',text:'Acme is a budget-friendly Asana alternative, though some users mention a learning curve.',sentiment:'neutral',date:'Yesterday, 1:08 PM'},
+  {engine:'Perplexity',query:'Remote team project management',text:'Acme is well-suited for remote teams with its clean interface and real-time collaboration features.',sentiment:'positive',date:'Jun 27, 9:40 AM'},
+];
+
+const INTEGRATIONS=[
+  {name:'Google Analytics 4',icon:'📊',connected:true,desc:'Track AI-driven traffic to your site'},
+  {name:'Google Search Console',icon:'🔍',connected:true,desc:'Cross-reference with organic search data'},
+  {name:'HubSpot CRM',icon:'🟠',connected:false,desc:'Tie visibility to lead and pipeline data'},
+  {name:'Slack Alerts',icon:'💬',connected:false,desc:'Get instant alerts in your Slack workspace'},
+  {name:'Notion',icon:'⬛',connected:false,desc:'Export fix queue actions to Notion'},
+  {name:'Zapier',icon:'⚡',connected:false,desc:'Build custom automations with 5,000+ apps'},
+];
+
+// ══ CHART DATA ══
+const CHART_DATA={
+  '7d':{bars:[[52,75],[60,68],[58,72],[70,65],[80,60],[72,58],[85,55]],labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun']},
+  '30d':{bars:[[45,80],[50,75],[55,72],[60,68],[65,65],[70,62],[75,58],[72,60],[68,63],[74,61],[78,58],[82,55]],labels:['W1','','','','W2','','','','W3','','','W4']},
+  '90d':{bars:[[30,90],[35,85],[40,82],[45,78],[50,75],[52,72],[55,70],[58,68],[62,65],[65,62],[68,60],[72,58],[75,55],[78,53],[80,51]],labels:Array.from({length:15},(_,i)=>`W${i+1}`)},
+};
+
+let currentRange='7d';
+let currentFilter='all';
+let expandedFix=null;
+const intConnected={};
+
+// ══ NAVIGATION ══
+const PAGE_TITLES={overview:'Overview',prompts:'Prompt Tracking',mentions:'Brand Mentions',citations:'Citation Sources',competitors:'Competitors',fixes:'Fix Queue',writer:'Content Writer',audit:'GEO Audit',reports:'Reports',settings:'Workspace',integrations:'Integrations'};
+
+function navigate(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.remove('hidden');
+  document.querySelectorAll(`.nav-item[data-page="${page}"]`).forEach(n=>n.classList.add('active'));
+  document.getElementById('topbar-title').textContent=PAGE_TITLES[page]||page;
+}
+
+document.querySelectorAll('.nav-item[data-page]').forEach(item=>{
+  item.addEventListener('click',()=>navigate(item.dataset.page));
+});
+
+// ══ TOAST ══
+function showToast(msg,type='info'){
+  const el=document.createElement('div');
+  el.className=`toast toast-${type}`;
+  el.innerHTML=`<span>${type==='success'?'✓':type==='error'?'✕':'ℹ'}</span>${msg}`;
+  el.onclick=()=>el.remove();
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(()=>el.remove(),3200);
+}
+
+// ══ MODALS ══
+function openModal(id){document.getElementById(id).classList.remove('hidden')}
+function closeModal(id){document.getElementById(id).classList.add('hidden')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.modal-overlay:not(.hidden)').forEach(m=>m.classList.add('hidden'))});
+
+// ══ HELPERS ══
+function covClass(c){return c>=70?'cov-high':c>=40?'cov-mid':'cov-low'}
+function covColor(c){return c>=70?'#4ade80':c>=40?'#fbbf24':'#f87171'}
+function posColor(p){return p<=3?'#4ade80':p<=6?'#fbbf24':'#f87171'}
+function trendHtml(t){return t>0?`<span style="color:#4ade80">▲${t}</span>`:t<0?`<span style="color:#f87171">▼${Math.abs(t)}</span>`:`<span style="color:#7b82a0">—</span>`}
+function statusTag(s){const m={winning:'tag-green',losing:'tag-red',neutral:'tag-yellow'};return`<span class="tag ${m[s]}">${s}</span>`}
+
+// ══ TIME RANGE TABS ══
+document.querySelectorAll('.time-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.time-btn').forEach(b=>{b.style.background='transparent';b.style.color='#7b82a0'});
+    btn.style.background='#6c63ff';btn.style.color='#fff';
+    currentRange=btn.dataset.range;
+    renderChart();
+  });
+});
+// init
+document.querySelectorAll('.time-btn').forEach(b=>{b.style.background='transparent';b.style.color='#7b82a0'});
+document.querySelector('.time-btn[data-range="7d"]').style.background='#6c63ff';
+document.querySelector('.time-btn[data-range="7d"]').style.color='#fff';
+
+// ══ FILTER TABS ══
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.filter-btn').forEach(b=>{b.style.background='transparent';b.style.color='#7b82a0'});
+    btn.style.background='#6c63ff';btn.style.color='#fff';
+    currentFilter=btn.dataset.filter;
+    renderPromptTable();
+  });
+});
+document.querySelectorAll('.filter-btn').forEach(b=>{b.style.background='transparent';b.style.color='#7b82a0'});
+document.querySelector('.filter-btn[data-filter="all"]').style.background='#6c63ff';
+document.querySelector('.filter-btn[data-filter="all"]').style.color='#fff';
+
+// ══ CHART ══
+function renderChart(){
+  const d=CHART_DATA[currentRange];
+  const max=Math.max(...d.bars.flat());
+  const chart=document.getElementById('main-chart');
+  const labels=document.getElementById('chart-labels');
+  chart.innerHTML=d.bars.map(([y,c])=>`
+    <div class="bar-group">
+      <div class="bar-you" style="height:${(y/max)*100}%"></div>
+      <div class="bar-comp" style="height:${(c/max)*100}%"></div>
+    </div>`).join('');
+  labels.innerHTML=d.labels.map(l=>`<div class="chart-label">${l}</div>`).join('');
+}
+
+// ══ OVERVIEW PROMPT TABLE ══
+function renderOverviewPromptTable(){
+  const t=document.getElementById('overview-prompt-table');
+  t.innerHTML=`<thead><tr>${['Prompt','Engines','Coverage','Position','Trend','Action'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>`+
+  `<tbody>${PROMPTS.slice(0,4).map(p=>`<tr onclick="openPromptDetail(${p.id})">
+    <td><div style="font-size:12px;font-weight:600">${p.name}</div><div style="font-size:10px;color:#7b82a0;margin-top:2px">${p.query}</div></td>
+    <td><div class="engine-dots">${Object.entries(p.engines).map(([k,v])=>`<div class="eng-dot ${v?'eng-hit':'eng-miss'}">${k}</div>`).join('')}</div></td>
+    <td><div class="cov-bar-wrap"><div class="cov-bar"><div class="cov-fill ${covClass(p.cov)}" style="width:${p.cov}%"></div></div><div style="font-size:11px;font-weight:700;color:${covColor(p.cov)}">${p.cov}%</div></div></td>
+    <td style="font-size:13px;font-weight:700;color:${posColor(p.pos)}">#${p.pos}</td>
+    <td>${trendHtml(p.trend)}</td>
+    <td>${p.status==='losing'?`<button class="btn btn-xs" style="background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.2)" onclick="event.stopPropagation();navigate('fixes')">✦ Fix It</button>`:`<button class="btn btn-xs btn-ghost" onclick="event.stopPropagation();openPromptDetail(${p.id})">View</button>`}</td>
+  </tr>`).join('')}</tbody>`;
+}
+
+// ══ PROMPT TABLE (full page) ══
+function renderPromptTable(){
+  const search=(document.getElementById('prompt-search')||{value:''}).value.toLowerCase();
+  const filtered=PROMPTS.filter(p=>{
+    const matchS=p.name.toLowerCase().includes(search)||p.query.toLowerCase().includes(search);
+    const matchF=currentFilter==='all'||p.status===currentFilter;
+    return matchS&&matchF;
+  });
+  const t=document.getElementById('prompts-table');
+  t.innerHTML=`<thead><tr>${['Prompt','ChatGPT','Perplexity','Google AI','Copilot','Coverage','Pos','Trend','Status','Action'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>`+
+  `<tbody>${filtered.map(p=>`<tr onclick="openPromptDetail(${p.id})">
+    <td><div style="font-size:12px;font-weight:600">${p.name}</div><div style="font-size:10px;color:#7b82a0;margin-top:2px">${p.query}</div></td>
+    ${[p.engines.C,p.engines.P,p.engines.G,p.engines.B].map(v=>`<td><div style="width:24px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;background:${v?'rgba(74,222,128,.12)':'rgba(255,255,255,.04)'};color:${v?'#4ade80':'#4a5068'};font-size:14px">${v?'✓':'–'}</div></td>`).join('')}
+    <td><div class="cov-bar-wrap"><div class="cov-bar"><div class="cov-fill ${covClass(p.cov)}" style="width:${p.cov}%"></div></div><div style="font-size:11px;font-weight:700;color:${covColor(p.cov)}">${p.cov}%</div></div></td>
+    <td style="font-size:13px;font-weight:700;color:${posColor(p.pos)}">#${p.pos}</td>
+    <td>${trendHtml(p.trend)}</td>
+    <td>${statusTag(p.status)}</td>
+    <td>${p.status==='losing'?`<button class="btn btn-xs" style="background:rgba(74,222,128,.1);color:#4ade80;border:1px solid rgba(74,222,128,.2)" onclick="event.stopPropagation();navigate('fixes')">✦ Fix It</button>`:`<button class="btn btn-xs btn-ghost" onclick="event.stopPropagation();openPromptDetail(${p.id})">Detail</button>`}</td>
+  </tr>`).join('')}</tbody>`;
+}
+
+// ══ PROMPT DETAIL MODAL ══
+function openPromptDetail(id){
+  const p=PROMPTS.find(x=>x.id===id);
+  document.getElementById('detail-title').textContent=p.name;
+  document.getElementById('detail-body').innerHTML=`
+    <div style="background:#181b27;border-radius:8px;padding:10px 14px;font-size:12px;color:#7b82a0;font-style:italic;margin-bottom:4px">${p.query}</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
+      ${[{l:'Coverage',v:`${p.cov}%`,c:covColor(p.cov)},{l:'Position',v:`#${p.pos}`,c:posColor(p.pos)},{l:'7-day Trend',v:p.trend>0?`▲${p.trend}`:p.trend<0?`▼${Math.abs(p.trend)}`:'Flat',c:p.trend>0?'#4ade80':p.trend<0?'#f87171':'#7b82a0'}].map(s=>`
+      <div style="background:#08090d;border-radius:8px;padding:12px;text-align:center;border:1px solid #1f2333">
+        <div style="font-size:10px;color:#7b82a0;margin-bottom:4px">${s.l}</div>
+        <div style="font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:${s.c}">${s.v}</div>
+      </div>`).join('')}
+    </div>
+    <div style="font-size:11px;color:#7b82a0;font-weight:600;margin-bottom:8px">Engine Breakdown</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      ${[['ChatGPT',p.engines.C],['Perplexity',p.engines.P],['Google AI',p.engines.G],['Copilot',p.engines.B]].map(([name,hit])=>`
+      <div style="display:flex;align-items:center;gap:8px;background:#08090d;padding:9px 12px;border-radius:8px;border:1px solid #1f2333">
+        <div style="width:8px;height:8px;border-radius:50%;background:${hit?'#4ade80':'#f87171'}"></div>
+        <span style="font-size:12px;flex:1">${name}</span>
+        <span style="font-size:11px;font-weight:600;color:${hit?'#4ade80':'#f87171'}">${hit?'Visible':'Missing'}</span>
+      </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:10px;margin-top:4px">
+      <button class="btn btn-danger" style="flex:1" onclick="closeModal('modal-prompt-detail');showToast('Prompt removed','info')">Remove Prompt</button>
+      <button class="btn btn-primary" style="flex:2" onclick="closeModal('modal-prompt-detail');navigate('fixes')">✦ Get Fix Suggestions</button>
+    </div>`;
+  openModal('modal-prompt-detail');
+}
+
+// ══ OVERVIEW CITATIONS ══
+function renderOverviewCitations(){
+  document.getElementById('overview-citations').innerHTML=CITATIONS.slice(0,5).map((c,i)=>`
+    <div class="cite-row">
+      <div style="width:20px;font-size:11px;color:#4a5068;font-weight:600;text-align:center">${c.rank}</div>
+      <div style="flex:1"><span style="font-size:12px;font-weight:600">${c.domain}</span><span style="font-size:10px;color:#7b82a0;margin-left:4px">${c.label}</span></div>
+      <div style="width:90px">
+        <div style="height:3px;background:#1f2333;border-radius:4px;margin-bottom:2px">
+          <div style="height:100%;border-radius:4px;width:${c.pct}%;background:${c.yours?'linear-gradient(90deg,#4ade80,#22d3ee)':'linear-gradient(90deg,#38bdf8,#818cf8)'}"></div>
+        </div>
+        <div style="font-size:10px;color:#7b82a0">${c.count} citations</div>
+      </div>
+      ${c.yours?'<span class="tag tag-green">You</span>':''}
+    </div>`).join('');
+}
+
+// ══ CITATIONS PAGE ══
+function renderCitationsTable(){
+  const t=document.getElementById('citations-table');
+  t.innerHTML=`<thead><tr>${['#','Domain','Type','Citations','Share','Action'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>`+
+  `<tbody>${CITATIONS.map((c,i)=>`<tr style="${c.yours?'background:rgba(74,222,128,.03)':''}">
+    <td style="color:#4a5068;font-weight:600">${c.rank}</td>
+    <td><div style="font-size:13px;font-weight:600">${c.domain}</div>${c.yours?'<span class="tag tag-green" style="margin-top:3px">Your site</span>':''}</td>
+    <td><span class="tag tag-muted">${c.label}</span></td>
+    <td style="font-size:13px;font-weight:700">${c.count}</td>
+    <td><div style="width:120px"><div style="height:4px;background:#1f2333;border-radius:4px;margin-bottom:3px"><div style="height:100%;border-radius:4px;width:${c.pct}%;background:${c.yours?'linear-gradient(90deg,#4ade80,#22d3ee)':'linear-gradient(90deg,#38bdf8,#818cf8)'}"></div></div><div style="font-size:10px;color:#7b82a0">${c.pct}% of max</div></div></td>
+    <td>${!c.yours?`<button class="btn btn-xs btn-ghost" onclick="showToast('Opening ${c.domain} guide…','info')">Get Listed</button>`:`<span style="font-size:12px;color:#4ade80;font-weight:600">✓ Listed</span>`}</td>
+  </tr>`).join('')}</tbody>`;
+}
+
+// ══ COMPETITORS TABLE ══
+function renderCompetitorsTable(){
+  const t=document.getElementById('competitors-table');
+  t.innerHTML=`<thead><tr>${['Brand','Share of AI Voice','Mentions/week','7d Trend','Engines','Action'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>`+
+  `<tbody>${COMPETITORS.map(c=>`<tr style="${c.yours?'background:rgba(108,99,255,.04)':''}">
+    <td><div style="display:flex;align-items:center;gap:8px">
+      <div style="width:32px;height:32px;border-radius:8px;background:${c.yours?'rgba(108,99,255,.15)':'rgba(255,255,255,.05)'};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:${c.yours?'#a78bfa':'#7b82a0'}">${c.name[0]}</div>
+      <div><div style="font-size:13px;font-weight:600">${c.name}</div><div style="font-size:10px;color:#7b82a0">${c.domain}</div></div>
+      ${c.yours?'<span class="tag tag-purple">You</span>':''}
+    </div></td>
+    <td><div style="width:140px">
+      <div style="height:5px;background:#1f2333;border-radius:4px;margin-bottom:4px"><div style="height:100%;border-radius:4px;width:${c.sov}%;background:${c.yours?'linear-gradient(90deg,#6c63ff,#a78bfa)':'rgba(255,255,255,.12)'}"></div></div>
+      <div style="font-size:12px;font-weight:700;color:${c.yours?'#a78bfa':'#e8eaf2'}">${c.sov}%</div>
+    </div></td>
+    <td style="font-size:13px;font-weight:600">${c.mentions.toLocaleString()}</td>
+    <td style="font-size:12px;font-weight:700;color:${c.trend>0?'#4ade80':c.trend<0?'#f87171':'#7b82a0'}">${c.trend>0?`▲${c.trend}%`:c.trend<0?`▼${Math.abs(c.trend)}%`:'—'}</td>
+    <td style="font-size:13px;font-weight:600">${c.engines}/4</td>
+    <td>${!c.yours?`<button class="btn btn-xs btn-ghost" onclick="showToast('Loading ${c.name} gap analysis…','info')">View Gaps</button>`:'—'}</td>
+  </tr>`).join('')}</tbody>`;
+}
+
+// ══ FIX QUEUE ══
+function renderFixes(){
+  document.getElementById('fix-list').innerHTML=FIXES.map(f=>`
+    <div class="fix-item" id="fix-${f.id}">
+      <div class="fix-header" onclick="toggleFix(${f.id})">
+        <span class="fix-priority ${f.priClass}">${f.priority}</span>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px">${f.title}</div>
+          <div style="font-size:11px;color:#7b82a0;line-height:1.5">${f.desc}</div>
+          <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+            <span class="tag tag-muted">${f.type}</span>
+            ${f.engines.map(e=>`<span class="tag tag-muted">${e}</span>`).join('')}
+            <span class="tag tag-green">${f.impact}</span>
+          </div>
+        </div>
+        <span id="fix-arrow-${f.id}" style="color:#4a5068;font-size:18px;transition:transform .2s">›</span>
+      </div>
+      <div class="fix-body" id="fix-body-${f.id}">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          ${f.action==='draft'?`<button class="btn btn-success" style="flex:2;min-width:140px" onclick="openDraft(${f.id})">✏️ Draft with AI</button>`:''}
+          ${f.action==='guide'?`<button class="btn" style="flex:2;background:linear-gradient(135deg,#38bdf8,#818cf8);color:#fff;min-width:140px" onclick="showToast('Step-by-step guide opened','info')">📋 Step-by-Step Guide</button>`:''}
+          ${f.action==='sources'?`<button class="btn btn-primary" style="flex:2;min-width:140px" onclick="navigate('citations')">🔗 View Citation Sources</button>`:''}
+          <button class="btn" style="flex:1;background:rgba(74,222,128,.08);color:#4ade80;border:1px solid rgba(74,222,128,.2)" onclick="markFixDone(${f.id})">✓ Done</button>
+          <button class="btn btn-ghost" style="flex:1" onclick="dismissFix(${f.id})">Dismiss</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleFix(id){
+  const body=document.getElementById(`fix-body-${id}`);
+  const arrow=document.getElementById(`fix-arrow-${id}`);
+  const open=body.classList.contains('open');
+  document.querySelectorAll('.fix-body').forEach(b=>b.classList.remove('open'));
+  document.querySelectorAll('[id^="fix-arrow-"]').forEach(a=>a.style.transform='none');
+  if(!open){body.classList.add('open');arrow.style.transform='rotate(90deg)';}
+}
+
+function markFixDone(id){
+  const el=document.getElementById(`fix-${id}`);
+  el.style.opacity='0.4';el.style.pointerEvents='none';
+  showToast('Fix marked as complete ✓','success');
+}
+
+function dismissFix(id){
+  document.getElementById(`fix-${id}`).remove();
+  showToast('Fix dismissed','info');
+}
+
+// ══ DRAFT MODAL ══
+function openDraft(fixId){
+  const f=FIXES.find(x=>x.id===fixId);
+  document.getElementById('draft-title').textContent='AI Content Brief — '+f.title;
+  document.getElementById('draft-body').innerHTML=`
+    <div style="text-align:center;padding:24px 0">
+      <div style="font-size:40px;margin-bottom:12px">✏️</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px">Ready to generate</div>
+      <div style="font-size:12px;color:#7b82a0;margin-bottom:20px">We'll analyze your visibility gap and create a complete content brief to fix it.</div>
+      <button class="btn btn-success" style="padding:10px 28px" onclick="runDraft(${fixId})">Generate Brief</button>
+    </div>`;
+  openModal('modal-draft');
+}
+
+function runDraft(fixId){
+  const f=FIXES.find(x=>x.id===fixId);
+  document.getElementById('draft-body').innerHTML=`
+    <div style="text-align:center;padding:30px 0">
+      <div style="font-size:12px;color:#7b82a0;margin-bottom:14px">Analyzing visibility gaps…</div>
+      <div style="display:flex;justify-content:center;gap:8px">
+        ${[0,1,2].map(i=>`<div style="width:9px;height:9px;border-radius:50%;background:#6c63ff;animation:bounce${i} .8s ease ${i*0.2}s infinite"></div>`).join('')}
+      </div>
+    </div>
+    <style>
+      @keyframes bounce0{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+      @keyframes bounce1{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+      @keyframes bounce2{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+    </style>`;
+  setTimeout(()=>{
+    const brief=`# ${f.title}\n\n## Why This Gap Exists\n${f.desc}\n\n## Recommended Content Structure\n\n1. **Opening (100 words)** — Lead with a direct answer to the query. AI models rank pages that answer in the first paragraph.\n2. **Comparison Table** — Feature-by-feature breakdown vs 3 named competitors. This is the #1 cited format in ChatGPT answers.\n3. **Use Case Sections** — Cover remote teams, startups, and enterprise. Each section should answer a specific query variation.\n4. **FAQ Block (8 questions)** — Include exact phrasing users search. Use FAQ schema (JSON-LD).\n5. **Social Proof** — Embed G2 and Capterra ratings. AI cites pages with visible review data 2.4× more often.\n\n## Target Queries to Rank For\n- "${f.title.toLowerCase()}"\n- Best alternative to [competitor] for small teams\n- [Competitor] vs Acme comparison 2025\n\n## Technical Checklist\n☐ Add FAQ JSON-LD schema\n☐ Include "last updated" date\n☐ Internal links to Pricing and Features\n☐ Open Graph tags complete\n\n## Estimated Impact\n${f.impact} — based on competitor page analysis`;
+    document.getElementById('draft-body').innerHTML=`
+      <div style="background:#08090d;border:1px solid #1f2333;border-radius:10px;padding:16px;font-size:12px;color:#e8eaf2;line-height:1.8;white-space:pre-wrap;max-height:320px;overflow-y:auto;font-family:'Inter',monospace">${brief}</div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn btn-ghost" style="flex:1" onclick="navigator.clipboard&&navigator.clipboard.writeText(\`${brief.replace(/`/g,"'")}\`).then(()=>showToast('Brief copied','success'))">📋 Copy</button>
+        <button class="btn btn-success" style="flex:2" onclick="closeModal('modal-draft');showToast('Brief exported as .docx','success')">↓ Export as Doc</button>
+      </div>`;
+  },1600);
+}
+
+// ══ GEO AUDIT ══
+function renderGeoAudit(){
+  document.getElementById('geo-audit-grid').innerHTML=GEO_AUDIT.map(cat=>`
+    <div class="card">
+      <div class="card-header">
+        <div style="flex:1"><div class="card-title">${cat.category}</div></div>
+        <div style="font-family:'Sora',sans-serif;font-size:22px;font-weight:800;color:${cat.color}">${cat.score}</div>
+        <div style="width:50px;margin-left:8px"><div style="height:4px;background:#1f2333;border-radius:4px"><div style="height:100%;border-radius:4px;width:${cat.score}%;background:${cat.color}"></div></div></div>
+      </div>
+      <div style="padding:4px 0">
+        ${cat.items.map((item,i)=>`
+        <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 18px;${i<cat.items.length-1?'border-bottom:1px solid #1f2333':''}">
+          <div style="width:18px;height:18px;border-radius:50%;flex-shrink:0;margin-top:1px;background:${item.status==='pass'?'rgba(74,222,128,.15)':item.status==='warn'?'rgba(251,191,36,.15)':'rgba(248,113,113,.15)'};display:flex;align-items:center;justify-content:center;font-size:10px;color:${item.status==='pass'?'#4ade80':item.status==='warn'?'#fbbf24':'#f87171'}">
+            ${item.status==='pass'?'✓':item.status==='warn'?'!':'✕'}
+          </div>
+          <div style="flex:1">
+            <div style="font-size:12px;font-weight:600;margin-bottom:2px">${item.label}</div>
+            <div style="font-size:11px;color:#7b82a0">${item.detail}</div>
+          </div>
+          ${item.status!=='pass'?`<button class="btn btn-xs" style="background:rgba(108,99,255,.1);color:#a78bfa;border:1px solid rgba(108,99,255,.2);flex-shrink:0" onclick="showToast('Fix guide opened','info')">Fix</button>`:''}
+        </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+// ══ REPORTS ══
+function renderReports(){
+  document.getElementById('reports-grid').innerHTML=REPORTS.map(r=>`
+    <div class="card" style="padding:16px">
+      <div style="font-size:32px;margin-bottom:10px">${r.icon}</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px">${r.title}</div>
+      <div style="font-size:11px;color:#7b82a0;margin-bottom:14px">${r.date}</div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="tag tag-muted">${r.type}</span>
+        <button class="btn btn-xs" style="background:rgba(108,99,255,.1);color:#a78bfa;border:1px solid rgba(108,99,255,.2);margin-left:auto" onclick="showToast('${r.title} downloaded','success')">↓ Download</button>
+      </div>
+    </div>`).join('');
+}
+
+// ══ MENTIONS ══
+function renderMentions(){
+  document.getElementById('mentions-log').innerHTML=MENTIONS_SAMPLE.map(m=>`
+    <div style="padding:14px 0;border-bottom:1px solid #1f2333;display:flex;gap:12px;align-items:flex-start">
+      <div style="width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;background:${m.sentiment==='positive'?'#4ade80':m.sentiment==='negative'?'#f87171':'#fbbf24'}"></div>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+          <span class="tag tag-muted" style="font-size:9px">${m.engine}</span>
+          <span style="font-size:11px;color:#7b82a0;font-style:italic">"${m.query}"</span>
+        </div>
+        <div style="font-size:12px;line-height:1.6;color:#e8eaf2">${m.text}</div>
+      </div>
+      <div style="font-size:10px;color:#4a5068;white-space:nowrap;flex-shrink:0">${m.date}</div>
+    </div>`).join('');
+}
+
+// ══ SETTINGS TOGGLES ══
+function renderSettings(){
+  const toggles=[{label:'Alert me on visibility drops',key:'drops',def:true},{label:'Weekly performance digest',key:'weekly',def:true},{label:'Competitor movement alerts',key:'comp',def:false}];
+  document.getElementById('notif-toggles').innerHTML=toggles.map(t=>`
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#181b27;border-radius:8px;border:1px solid #1f2333;margin-bottom:8px">
+      <span style="font-size:13px">${t.label}</span>
+      <div class="toggle" id="toggle-${t.key}" style="background:${t.def?'#6c63ff':'#252a3d'}" onclick="toggleSwitch('${t.key}')">
+        <div class="toggle-knob" style="left:${t.def?20:3}px"></div>
+      </div>
+    </div>`).join('');
+  const renderIntList=(elId)=>{
+    const el=document.getElementById(elId);
+    if(!el)return;
+    el.innerHTML=INTEGRATIONS.map(i=>`
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;background:#181b27;border-radius:8px;border:1px solid #1f2333">
+        <span style="font-size:20px">${i.icon}</span>
+        <div style="flex:1"><div style="font-size:13px;font-weight:500">${i.name}</div><div style="font-size:11px;color:#7b82a0">${i.desc}</div></div>
+        <span class="tag ${(intConnected[i.name]!==undefined?intConnected[i.name]:i.connected)?'tag-green':'tag-muted'}">${(intConnected[i.name]!==undefined?intConnected[i.name]:i.connected)?'Connected':'Not connected'}</span>
+        <button class="btn btn-xs ${(intConnected[i.name]!==undefined?intConnected[i.name]:i.connected)?'btn-danger':'btn-primary'}" onclick="toggleIntegration('${i.name}')">${(intConnected[i.name]!==undefined?intConnected[i.name]:i.connected)?'Disconnect':'Connect'}</button>
+      </div>`).join('');
+  };
+  renderIntList('integrations-list');
+  renderIntList('integrations-list-2');
+}
+
+function toggleSwitch(key){
+  const t=document.getElementById(`toggle-${key}`);
+  const knob=t.querySelector('.toggle-knob');
+  const on=knob.style.left==='20px';
+  knob.style.left=on?'3px':'20px';
+  t.style.background=on?'#252a3d':'#6c63ff';
+  showToast(on?'Notification disabled':'Notification enabled','info');
+}
+
+function toggleIntegration(name){
+  const i=INTEGRATIONS.find(x=>x.name===name);
+  const wasConnected=intConnected[name]!==undefined?intConnected[name]:i.connected;
+  intConnected[name]=!wasConnected;
+  showToast(wasConnected?`${name} disconnected`:`${name} connected`,'success');
+  renderSettings();
+}
+
+// ══ CONTENT WRITER ══
+function generateBrief(){
+  const topic=document.getElementById('writer-topic').value.trim();
+  const engine=document.getElementById('writer-engine').value;
+  const type=document.getElementById('writer-type').value;
+  if(!topic){showToast('Enter a topic first','error');return;}
+  const out=document.getElementById('writer-output');
+  out.innerHTML=`<div style="text-align:center;padding:30px 0;display:flex;flex-direction:column;align-items:center;gap:14px"><div style="font-size:12px;color:#7b82a0">Generating brief for <em>${topic}</em>…</div><div style="width:28px;height:28px;border:3px solid #6c63ff;border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite"></div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+  setTimeout(()=>{
+    out.innerHTML=`<div style="font-size:12px;line-height:1.9;white-space:pre-wrap;color:#e8eaf2;max-height:420px;overflow-y:auto"># ${type}: ${topic}\n\n**Target Engine:** ${engine}\n\n## Structure\n1. Open with a direct, one-sentence answer to the query\n2. Comparison table vs top 3 competitors\n3. Three use-case sections (startup / remote / enterprise)\n4. FAQ block with 6 targeted questions (add JSON-LD schema)\n5. Social proof callout (G2 rating + testimonial)\n6. CTA to free trial\n\n## Recommended Word Count\n1,200 – 1,600 words\n\n## Key Phrases to Include\n- "${topic}"\n- "alternative to [competitor]"\n- "best [use case] tool in 2025"\n\n## Technical Requirements\n☐ JSON-LD FAQ schema\n☐ Open Graph tags (title, description, image)\n☐ Internal links → Pricing, Features, Demo\n☐ Last Updated date visible\n\n## Estimated Visibility Impact\nBased on similar pages in your category: +15–25% coverage in ${engine} within 60 days of indexing.</div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-ghost" style="flex:1" onclick="showToast('Copied to clipboard','success')">📋 Copy</button>
+      <button class="btn btn-success" style="flex:2" onclick="showToast('Exported as .docx','success')">↓ Export Doc</button>
+    </div>`;
+  },1800);
+}
+
+// ══ ADD PROMPT ══
+function addPrompt(){
+  const val=document.getElementById('new-prompt-text').value.trim();
+  if(!val){showToast('Enter a prompt first','error');return;}
+  closeModal('modal-add-prompt');
+  showToast('Prompt added — tracking starts tonight','success');
+  document.getElementById('new-prompt-text').value='';
+}
+
+// ══ INIT ══
+renderChart();
+renderOverviewPromptTable();
+renderOverviewCitations();
+renderPromptTable();
+renderCitationsTable();
+renderCompetitorsTable();
+renderFixes();
+renderGeoAudit();
+renderReports();
+renderMentions();
+renderSettings();
+</script>
+</body>
+</html>
