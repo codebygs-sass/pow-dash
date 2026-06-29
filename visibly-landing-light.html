@@ -1,0 +1,1999 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <title>
+      Albetora AEO - #1 AI Search Visibility That Tells You What to Fix
+    </title>
+    <link rel="icon" type="image/png" href="/assets/download.svg" />
+    <meta
+      name="description"
+      content="Track your brand across ChatGPT, Perplexity and Google AI — then get an AI-generated fix for every gap. Not just data. A complete action plan."
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"
+    ></script>
+    <script type="text/javascript">
+      (function () {
+        emailjs.init({
+          publicKey: "9H6gYA9EgfnD4iFCB",
+        });
+      })();
+    </script>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "Inter", sans-serif;
+        background: #ffffff;
+        color: #111827;
+        font-size: 15px;
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+      button,
+      input,
+      select,
+      textarea {
+        font-family: "Inter", sans-serif;
+      }
+
+      /* ── TOKENS ── */
+      :root {
+        --bg: #ffffff;
+        --bg2: #f8f9fc;
+        --bg3: #f1f3f9;
+        --border: #e5e7ef;
+        --border2: #d1d5e0;
+        --violet: #5b50f0;
+        --violet-dark: #4840d4;
+        --violet-light: #ede9ff;
+        --violet-mid: #8b83f5;
+        --green: #059669;
+        --green-bg: #ecfdf5;
+        --orange: #ea580c;
+        --orange-bg: #fff7ed;
+        --red: #dc2626;
+        --text: #111827;
+        --text2: #374151;
+        --muted: #6b7280;
+        --muted2: #9ca3af;
+        --white: #ffffff;
+      }
+
+      /* ── NAV ── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        height: 64px;
+        padding: 0 48px;
+        display: flex;
+        align-items: center;
+        gap: 32px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(16px);
+        border-bottom: 1px solid var(--border);
+        transition: box-shadow 0.2s;
+      }
+      nav.scrolled {
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.07);
+      }
+      .nav-logo {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        text-decoration: none;
+      }
+      .nav-logo-mark {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        background: var(--violet);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 800;
+        color: #fff;
+      }
+      .nav-logo-text {
+        font-family: "Sora", sans-serif;
+        font-weight: 700;
+        font-size: 17px;
+        color: var(--text);
+      }
+      .nav-links {
+        display: flex;
+        gap: 28px;
+        margin-left: 32px;
+      }
+      .nav-links a {
+        font-size: 13px;
+        color: var(--muted);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.15s;
+      }
+      .nav-links a:hover {
+        color: var(--text);
+      }
+      .nav-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .btn-nav-ghost {
+        padding: 7px 16px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        background: transparent;
+        border: 1px solid var(--border2);
+        cursor: pointer;
+        transition: all 0.15s;
+        text-decoration: none;
+      }
+      .btn-nav-ghost:hover {
+        border-color: var(--violet);
+        color: var(--violet);
+      }
+      .btn-nav-primary {
+        padding: 8px 20px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #fff;
+        background: var(--violet);
+        border: none;
+        cursor: pointer;
+        transition: all 0.15s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+      }
+      .btn-nav-primary:hover {
+        background: var(--violet-dark);
+      }
+
+      /* ── LAYOUT ── */
+      .container {
+        max-width: 1080px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      .container-narrow {
+        max-width: 680px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+      section {
+        padding: 96px 24px;
+      }
+
+      /* ── HERO ── */
+      #hero {
+        padding: 140px 24px 80px;
+        background: var(--bg);
+      }
+      .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--violet-light);
+        border-radius: 100px;
+        padding: 6px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--violet);
+        margin-bottom: 28px;
+      }
+      .hero-badge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+
+      .hero-h1 {
+        font-family: "Sora", sans-serif;
+        font-size: clamp(38px, 5.5vw, 66px);
+        font-weight: 800;
+        line-height: 1.08;
+        letter-spacing: -2.5px;
+        color: var(--text);
+        margin-bottom: 22px;
+        max-width: 780px;
+      }
+      .hero-h1 .accent {
+        color: var(--violet);
+      }
+      .hero-h1 .accent-green {
+        color: var(--green);
+      }
+
+      .hero-sub {
+        font-size: 18px;
+        color: var(--muted);
+        max-width: 540px;
+        line-height: 1.7;
+        margin-bottom: 36px;
+        font-weight: 400;
+      }
+      .hero-sub strong {
+        color: var(--text2);
+        font-weight: 600;
+      }
+
+      .hero-form {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 16px;
+        max-width: 480px;
+      }
+      .hero-input {
+        flex: 1;
+        padding: 13px 18px;
+        border-radius: 10px;
+        border: 1.5px solid var(--border2);
+        background: #fff;
+        color: var(--text);
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .hero-input:focus {
+        border-color: var(--violet);
+      }
+      .hero-input::placeholder {
+        color: var(--muted2);
+      }
+      .btn-hero {
+        padding: 13px 24px;
+        border-radius: 10px;
+        background: var(--violet);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+        box-shadow: 0 4px 16px rgba(91, 80, 240, 0.3);
+      }
+      .btn-hero:hover {
+        background: var(--violet-dark);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(91, 80, 240, 0.38);
+      }
+      .hero-note {
+        font-size: 12px;
+        color: var(--muted2);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .hero-avatars {
+        display: flex;
+      }
+      .hero-avatars span {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        margin-right: -7px;
+        font-size: 10px;
+        font-weight: 700;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ── HERO PRODUCT PREVIEW ── */
+      .hero-preview-wrap {
+        margin-top: 64px;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow:
+          0 24px 80px rgba(17, 24, 39, 0.12),
+          0 0 0 1px var(--border);
+        background: #fff;
+      }
+      .preview-bar {
+        padding: 12px 18px;
+        background: var(--bg2);
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .preview-circles {
+        display: flex;
+        gap: 6px;
+      }
+      .preview-circle {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+      }
+      .preview-bar-title {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 auto;
+        font-weight: 500;
+      }
+      .preview-body {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 0;
+      }
+      .preview-left {
+        padding: 20px;
+        border-right: 1px solid var(--border);
+      }
+      .preview-right {
+        padding: 20px;
+        background: var(--bg2);
+      }
+      .preview-section-label {
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 700;
+        color: var(--muted2);
+        margin-bottom: 12px;
+      }
+
+      /* Fix cards inside preview */
+      .pfix {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 10px;
+        transition: box-shadow 0.15s;
+      }
+      .pfix:hover {
+        box-shadow: 0 4px 16px rgba(17, 24, 39, 0.08);
+      }
+      .pfix-top {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+      .pfix-pri {
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 5px;
+      }
+      .pfix-pri.h {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .pfix-pri.m {
+        background: #fef3c7;
+        color: #b45309;
+      }
+      .pfix-pri.q {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .pfix-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 4px;
+      }
+      .pfix-desc {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.5;
+        margin-bottom: 10px;
+      }
+      .pfix-impact {
+        font-size: 10px;
+        color: var(--green);
+        font-weight: 600;
+        margin-bottom: 8px;
+      }
+      .pfix-btn {
+        width: 100%;
+        padding: 7px;
+        border-radius: 7px;
+        border: none;
+        background: var(--violet);
+        color: #fff;
+        font-size: 11px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .pfix-btn:hover {
+        background: var(--violet-dark);
+      }
+      .pfix-btn.ghost {
+        background: var(--bg3);
+        color: var(--muted);
+        border: 1px solid var(--border);
+      }
+
+      /* Brief card inside preview */
+      .brief-box {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 14px;
+        height: 100%;
+      }
+      .brief-box-label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--violet);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .brief-box-label::before {
+        content: "✦";
+        font-size: 9px;
+      }
+      .brief-text {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.9;
+        font-family: "Inter", monospace;
+        white-space: pre-wrap;
+      }
+      .brief-cursor {
+        display: inline-block;
+        width: 2px;
+        height: 11px;
+        background: var(--violet);
+        animation: blink 1s step-end infinite;
+        vertical-align: middle;
+      }
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0;
+        }
+      }
+
+      /* Mini stats in preview */
+      .mini-stats {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 16px;
+      }
+      .mini-stat-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        margin-bottom: 4px;
+      }
+      .mini-bar {
+        height: 5px;
+        background: var(--bg3);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .mini-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.4s;
+      }
+
+      /* ── LOGOS BAR ── */
+      #logos {
+        padding: 32px 24px;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        background: var(--bg2);
+      }
+      .logos-label {
+        font-size: 12px;
+        color: var(--muted2);
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: 500;
+      }
+      .logos-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+      }
+      .logo-pill {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted2);
+        padding: 6px 14px;
+        border-radius: 100px;
+        border: 1px solid var(--border);
+        background: #fff;
+      }
+
+      /* ── COMPARISON ── */
+      #compare {
+        background: var(--bg2);
+      }
+      .eyebrow {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        font-weight: 700;
+        color: var(--violet);
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .eyebrow::before {
+        content: "";
+        width: 16px;
+        height: 2px;
+        background: var(--violet);
+        border-radius: 2px;
+      }
+      .section-h2 {
+        font-family: "Sora", sans-serif;
+        font-size: clamp(26px, 3.5vw, 40px);
+        font-weight: 800;
+        color: var(--text);
+        line-height: 1.15;
+        letter-spacing: -1.2px;
+        margin-bottom: 14px;
+      }
+      .section-p {
+        font-size: 16px;
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 540px;
+      }
+
+      .compare-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-top: 48px;
+      }
+      .compare-col {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 32px;
+        position: relative;
+        overflow: hidden;
+      }
+      .compare-col.us {
+        border-color: var(--violet);
+        box-shadow: 0 4px 24px rgba(91, 80, 240, 0.1);
+      }
+      .compare-col.us::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--violet);
+      }
+      .compare-brand {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+      }
+      .compare-brand.them {
+        color: var(--muted2);
+      }
+      .compare-brand.us {
+        color: var(--violet);
+      }
+      .compare-head {
+        font-size: 19px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 22px;
+        line-height: 1.3;
+      }
+      .compare-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 13px;
+        font-size: 14px;
+      }
+      .ci-icon {
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+      .ci-icon.x {
+        background: #fee2e2;
+        color: #dc2626;
+      }
+      .ci-icon.ch {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .ci-text {
+        color: var(--text2);
+        line-height: 1.5;
+      }
+
+      /* ── HOW IT WORKS ── */
+      #how {
+        background: #fff;
+      }
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+        margin-top: 52px;
+      }
+      .step-card {
+        padding: 32px 28px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--bg);
+        transition: all 0.2s;
+        position: relative;
+        overflow: hidden;
+      }
+      .step-card:hover {
+        border-color: var(--violet);
+        box-shadow: 0 8px 32px rgba(91, 80, 240, 0.1);
+        transform: translateY(-2px);
+      }
+      .step-num {
+        font-family: "Sora", sans-serif;
+        font-size: 54px;
+        font-weight: 800;
+        color: var(--bg3);
+        line-height: 1;
+        position: absolute;
+        top: 16px;
+        right: 20px;
+        letter-spacing: -2px;
+      }
+      .step-icon-wrap {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        margin-bottom: 20px;
+      }
+      .step-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 10px;
+        line-height: 1.3;
+      }
+      .step-desc {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+      .step-chip {
+        display: inline-flex;
+        margin-top: 16px;
+        font-size: 11px;
+        padding: 3px 10px;
+        border-radius: 5px;
+        font-weight: 600;
+      }
+
+      /* ── FEATURES GRID ── */
+      #features {
+        background: var(--bg2);
+      }
+      .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 52px;
+      }
+      .feat-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 28px 24px;
+        transition: all 0.2s;
+      }
+      .feat-card:hover {
+        border-color: var(--violet-mid);
+        box-shadow: 0 6px 24px rgba(91, 80, 240, 0.08);
+        transform: translateY(-2px);
+      }
+      .feat-icon {
+        font-size: 26px;
+        margin-bottom: 16px;
+      }
+      .feat-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+      .feat-desc {
+        font-size: 13px;
+        color: var(--muted);
+        line-height: 1.65;
+      }
+      .feat-proof {
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+        font-size: 11px;
+        color: var(--muted2);
+        line-height: 1.5;
+        font-style: italic;
+      }
+      .feat-proof strong {
+        color: var(--muted);
+        font-style: normal;
+      }
+
+      /* ── QUOTES ── */
+      #proof {
+        background: #fff;
+      }
+      .quotes-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 48px;
+      }
+      .quote-card {
+        background: var(--bg2);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 28px;
+      }
+      .quote-source-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--orange-bg);
+        border: 1px solid #fed7aa;
+        color: var(--orange);
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 9px;
+        border-radius: 4px;
+        margin-bottom: 14px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .quote-text {
+        font-size: 14px;
+        color: var(--text2);
+        line-height: 1.75;
+        margin-bottom: 18px;
+      }
+      .quote-text em {
+        color: var(--violet);
+        font-style: normal;
+        font-weight: 600;
+      }
+      .quote-author {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .quote-avatar {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .quote-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .quote-role {
+        font-size: 11px;
+        color: var(--muted2);
+      }
+
+      /* ── STATS BAR ── */
+      #stats {
+        padding: 64px 24px;
+        background: var(--violet);
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 32px;
+      }
+      .stat-block {
+        text-align: center;
+      }
+      .stat-num {
+        font-family: "Sora", sans-serif;
+        font-size: 44px;
+        font-weight: 800;
+        color: #fff;
+        line-height: 1;
+        margin-bottom: 6px;
+      }
+      .stat-num sup {
+        font-size: 22px;
+        vertical-align: super;
+      }
+      .stat-label {
+        font-size: 13px;
+        color: rgba(255, 255, 255, 0.65);
+      }
+
+      /* ── CTA ── */
+      #cta {
+        padding: 96px 24px;
+        background: var(--bg);
+        border-top: 1px solid var(--border);
+      }
+      .cta-box {
+        max-width: 640px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .cta-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: var(--green-bg);
+        border: 1px solid #a7f3d0;
+        border-radius: 100px;
+        padding: 5px 14px;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--green);
+        margin-bottom: 24px;
+      }
+      .cta-h2 {
+        font-family: "Sora", sans-serif;
+        font-size: clamp(30px, 4.5vw, 50px);
+        font-weight: 800;
+        color: var(--text);
+        line-height: 1.1;
+        letter-spacing: -1.5px;
+        margin-bottom: 14px;
+      }
+      .cta-sub {
+        font-size: 16px;
+        color: var(--muted);
+        margin-bottom: 36px;
+        line-height: 1.6;
+      }
+      .cta-form {
+        display: flex;
+        gap: 10px;
+        max-width: 440px;
+        margin: 0 auto 14px;
+      }
+      .cta-input {
+        flex: 1;
+        padding: 13px 16px;
+        border-radius: 10px;
+        border: 1.5px solid var(--border2);
+        background: #fff;
+        color: var(--text);
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .cta-input:focus {
+        border-color: var(--violet);
+      }
+      .cta-input::placeholder {
+        color: var(--muted2);
+      }
+      .cta-btn {
+        padding: 13px 22px;
+        border-radius: 10px;
+        background: var(--violet);
+        color: #fff;
+        font-size: 14px;
+        font-weight: 700;
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: all 0.15s;
+        box-shadow: 0 4px 16px rgba(91, 80, 240, 0.28);
+      }
+      .cta-btn:hover {
+        background: var(--violet-dark);
+        transform: translateY(-1px);
+      }
+      .cta-note {
+        font-size: 12px;
+        color: var(--muted2);
+      }
+      .cta-note span {
+        color: var(--green);
+        font-weight: 600;
+      }
+
+      .success-box {
+        display: none;
+        background: var(--green-bg);
+        border: 1px solid #a7f3d0;
+        border-radius: 14px;
+        padding: 36px;
+        text-align: center;
+      }
+      .success-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+      .success-h {
+        font-family: "Sora", sans-serif;
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 8px;
+      }
+      .success-p {
+        font-size: 14px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .success-p strong {
+        color: var(--green);
+        font-weight: 600;
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        padding: 36px 48px;
+        background: var(--bg2);
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .footer-links {
+        display: flex;
+        gap: 24px;
+      }
+      .footer-links a {
+        font-size: 13px;
+        color: var(--muted2);
+        text-decoration: none;
+        transition: color 0.15s;
+      }
+      .footer-links a:hover {
+        color: var(--muted);
+      }
+      .footer-copy {
+        font-size: 12px;
+        color: var(--muted2);
+      }
+
+      /* ── REVEAL ── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(20px);
+        transition:
+          opacity 0.55s ease,
+          transform 0.55s ease;
+      }
+      .reveal.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 860px) {
+        section {
+          padding: 72px 20px;
+        }
+        #hero {
+          padding: 120px 20px 60px;
+        }
+        .preview-body {
+          grid-template-columns: 1fr;
+        }
+        .compare-grid,
+        .steps,
+        .features-grid,
+        .quotes-grid,
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+        .hero-form,
+        .cta-form {
+          flex-direction: column;
+        }
+        .nav-links {
+          display: none;
+        }
+        nav {
+          padding: 0 24px;
+        }
+        footer {
+          padding: 28px 24px;
+          flex-direction: column;
+          text-align: center;
+        }
+        .hero-h1 {
+          letter-spacing: -1.5px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ══ NAV ══ -->
+    <nav id="nav">
+      <a href="#" class="nav-logo">
+        <div class="nav-logo-mark">✦</div>
+        <span class="nav-logo-text">Albetora AEO</span>
+      </a>
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#proof">Why we built this</a>
+      </div>
+      <div class="nav-right">
+        <a href="#cta" class="btn-nav-ghost">Sign in</a>
+        <a href="#cta" class="btn-nav-primary">Join waitlist →</a>
+      </div>
+    </nav>
+
+    <!-- ══ HERO ══ -->
+    <section id="hero">
+      <div class="container">
+        <div class="hero-badge">
+          <div class="hero-badge-dot"></div>
+          Early access open — 340 marketers already on the list
+        </div>
+
+        <h1 class="hero-h1">
+          Your brand is invisible<br />
+          in <span class="accent">AI search.</span><br />
+          We show you <span class="accent-green">how to fix it.</span>
+        </h1>
+
+        <p class="hero-sub">
+          Albetora AEO tracks your brand across ChatGPT, Perplexity and Google
+          AI — then gives you a
+          <strong
+            >prioritised fix queue with AI-generated content briefs</strong
+          >
+          for every gap. Not just data. A plan.
+        </p>
+
+        <form
+          class="hero-form"
+          onsubmit="submitWaitlist(event, 'hero-success')"
+        >
+          <input
+            class="hero-input"
+            type="email"
+            placeholder="your@email.com"
+            required
+            id="hero-email"
+          />
+          <button type="submit" onclick="sendEmail()" class="btn-hero">
+            Get early access
+          </button>
+        </form>
+        <div
+          id="hero-success"
+          style="
+            display: none;
+            background: var(--green-bg);
+            border: 1px solid #a7f3d0;
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 13px;
+            color: var(--green);
+            font-weight: 600;
+            max-width: 440px;
+          "
+        >
+          ✓ You're on the list — we'll be in touch within 7 days.
+        </div>
+        <div class="hero-note" style="margin-top: 12px">
+          <div class="hero-avatars">
+            <span style="background: #7c6fff">S</span>
+            <span style="background: #059669">M</span>
+            <span style="background: #ea580c">J</span>
+            <span style="background: #8b83f5">R</span>
+          </div>
+          <span style="margin-left: 12px; color: var(--muted2)"
+            >340 SEO managers and growth teams already waiting · Free to
+            join</span
+          >
+        </div>
+
+        <!-- Product preview -->
+        <div class="hero-preview-wrap reveal" style="margin-top: 60px">
+          <div class="preview-bar">
+            <div class="preview-circles">
+              <div class="preview-circle" style="background: #ff5f57"></div>
+              <div class="preview-circle" style="background: #febc2e"></div>
+              <div class="preview-circle" style="background: #28c840"></div>
+            </div>
+            <div class="preview-bar-title">
+              Albetora AEO — Fix Queue · acme.com
+            </div>
+          </div>
+          <div class="preview-body">
+            <!-- Left: fix cards -->
+            <div class="preview-left">
+              <div class="preview-section-label">Fix Queue — 12 actions</div>
+
+              <div class="pfix">
+                <div class="pfix-top">
+                  <span class="pfix-pri h">HIGH</span>
+                  <span style="font-size: 10px; color: var(--muted2)"
+                    >ChatGPT · Content gap</span
+                  >
+                </div>
+                <div class="pfix-title">Write a comparison page vs Asana</div>
+                <div class="pfix-desc">
+                  ChatGPT cites notion.so/vs-asana 47× but you have no
+                  comparison page — why you rank #8 for "Asana alternative."
+                </div>
+                <div class="pfix-impact">▲ Estimated +18% ChatGPT coverage</div>
+                <button class="pfix-btn" onclick="runTypewriter()">
+                  ✏️ Draft content brief with AI
+                </button>
+              </div>
+
+              <div class="pfix">
+                <div class="pfix-top">
+                  <span class="pfix-pri h">HIGH</span>
+                  <span style="font-size: 10px; color: var(--muted2)"
+                    >Google AI · Technical</span
+                  >
+                </div>
+                <div class="pfix-title">
+                  Add FAQ schema to your pricing page
+                </div>
+                <div class="pfix-desc">
+                  Google AI Overviews skips your pricing page — it has no
+                  structured data. 3 competitors with FAQ schema outrank you.
+                </div>
+                <div class="pfix-impact">
+                  ▲ Estimated +12% Google AI coverage
+                </div>
+                <button class="pfix-btn ghost">📋 Step-by-step guide</button>
+              </div>
+
+              <div class="pfix">
+                <div class="pfix-top">
+                  <span class="pfix-pri q">QUICK WIN</span>
+                  <span style="font-size: 10px; color: var(--muted2)"
+                    >All engines · Freshness</span
+                  >
+                </div>
+                <div class="pfix-title">Refresh your "About" page</div>
+                <div class="pfix-desc">
+                  Last updated 8 months ago. AI models favour pages updated in
+                  the last 90 days for brand definition queries.
+                </div>
+                <div class="pfix-impact" style="color: #b45309">
+                  ▲ Estimated +5% across all engines
+                </div>
+                <button class="pfix-btn ghost">✏️ Draft with AI</button>
+              </div>
+            </div>
+
+            <!-- Right: brief output + mini stats -->
+            <div class="preview-right">
+              <div class="preview-section-label">AI Content Brief</div>
+              <div class="brief-box">
+                <div class="brief-box-label">Generated brief</div>
+                <div class="brief-text" id="brief-output">
+                  # Asana Alternative: Full Guide ## Why You're Missing This
+                  ChatGPT cites comparison pages 3.2× more than feature pages.
+                  You have no comparison page. ## Recommended Structure 1.
+                  Direct answer in first 80 words 2. Comparison table (5 tools)
+                  3. Use-case sections by team type 4. FAQ block with JSON-LD
+                  schema 5. G2 rating callout for trust ## Technical Checklist ☐
+                  Add FAQ JSON-LD schema ☐ "Last updated" date visible ☐ Links →
+                  Pricing &amp; Features ☐ Open Graph tags complete Target:
+                  1,400 words Update: Every 90 days<span
+                    class="brief-cursor"
+                  ></span>
+                </div>
+              </div>
+
+              <div
+                style="
+                  margin-top: 14px;
+                  background: #fff;
+                  border: 1px solid var(--border);
+                  border-radius: 10px;
+                  padding: 14px;
+                "
+              >
+                <div class="preview-section-label" style="margin-bottom: 10px">
+                  This week
+                </div>
+                <div class="mini-stats">
+                  <div>
+                    <div class="mini-stat-row">
+                      <span style="color: var(--muted)">AI Share of Voice</span
+                      ><span style="color: var(--violet); font-weight: 700"
+                        >38%</span
+                      >
+                    </div>
+                    <div class="mini-bar">
+                      <div
+                        class="mini-bar-fill"
+                        style="width: 38%; background: var(--violet)"
+                      ></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="mini-stat-row">
+                      <span style="color: var(--muted)">Prompts winning</span
+                      ><span style="color: var(--green); font-weight: 700"
+                        >31/47</span
+                      >
+                    </div>
+                    <div class="mini-bar">
+                      <div
+                        class="mini-bar-fill"
+                        style="width: 66%; background: var(--green)"
+                      ></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="mini-stat-row">
+                      <span style="color: var(--muted)">Fixes completed</span
+                      ><span style="color: #b45309; font-weight: 700"
+                        >4/12</span
+                      >
+                    </div>
+                    <div class="mini-bar">
+                      <div
+                        class="mini-bar-fill"
+                        style="width: 33%; background: #f59e0b"
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  style="
+                    margin-top: 12px;
+                    font-size: 11px;
+                    color: var(--green);
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                  "
+                >
+                  <div
+                    style="
+                      width: 6px;
+                      height: 6px;
+                      border-radius: 50%;
+                      background: var(--green);
+                      animation: pulse 2s infinite;
+                    "
+                  ></div>
+                  Live · Syncs every 6 hours
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ LOGOS ══ -->
+    <div id="logos">
+      <div class="container">
+        <div class="logos-label">
+          Tracks your brand across all major AI search engines
+        </div>
+        <div class="logos-row">
+          <div class="logo-pill">🟢 ChatGPT</div>
+          <div class="logo-pill">🔵 Perplexity</div>
+          <div class="logo-pill">🔶 Google AI</div>
+          <div class="logo-pill">🟣 Copilot</div>
+          <div class="logo-pill">⬛ Claude</div>
+          <div class="logo-pill">⚡ Grok</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ COMPARISON ══ -->
+    <section id="compare">
+      <div class="container">
+        <div class="reveal">
+          <div class="eyebrow">The honest difference</div>
+          <h2 class="section-h2">
+            Other tools tell you<br />you're invisible. We fix it.
+          </h2>
+          <p class="section-p">
+            Every AI visibility tool on the market stops at monitoring. Albetora
+            AEO is the first one that also tells you what to write.
+          </p>
+        </div>
+
+        <div class="compare-grid reveal">
+          <div class="compare-col them">
+            <div class="compare-brand them">
+              Otterly &amp; similar monitoring tools
+            </div>
+            <div class="compare-head">
+              "You're invisible in ChatGPT."<br /><span
+                style="color: var(--muted2); font-weight: 400; font-size: 16px"
+                >And that's where the help ends.</span
+              >
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon x">✕</div>
+              <div class="ci-text">
+                Shows your visibility score but doesn't explain the root cause
+              </div>
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon x">✕</div>
+              <div class="ci-text">
+                Tracks brand mentions with no path to improving them
+              </div>
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon x">✕</div>
+              <div class="ci-text">
+                Observational only — writing the fix happens in a separate tool
+              </div>
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon x">✕</div>
+              <div class="ci-text">
+                GEO audit flags problems without explaining how to solve them
+              </div>
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon x">✕</div>
+              <div class="ci-text">
+                No GA4 or GSC integration — visibility data is siloed
+              </div>
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon x">✕</div>
+              <div class="ci-text">
+                Prompt-based pricing that gets expensive fast for agencies
+              </div>
+            </div>
+          </div>
+
+          <div class="compare-col us">
+            <div class="compare-brand us">Albetora AEO</div>
+            <div class="compare-head">
+              "Here's exactly what<br />to write to rank higher."
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon ch">✓</div>
+              <div class="ci-text">
+                Explains the specific root cause — missing page, stale content,
+                or technical gap
+              </div>
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon ch">✓</div>
+              <div class="ci-text">
+                Fix Queue ranks every action by estimated visibility impact
+              </div>
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon ch">✓</div>
+              <div class="ci-text">
+                AI Content Writer generates a full brief — structure, schema,
+                word count — in 30 seconds
+              </div>
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon ch">✓</div>
+              <div class="ci-text">
+                GEO Audit includes a step-by-step fix guide for every issue
+                found
+              </div>
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon ch">✓</div>
+              <div class="ci-text">
+                Native GA4 and GSC integration — tie citations to actual traffic
+              </div>
+            </div>
+            <div class="compare-item">
+              <div class="ci-icon ch">✓</div>
+              <div class="ci-text">
+                Unlimited client workspaces — one flat price for agencies
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ HOW IT WORKS ══ -->
+    <section id="how">
+      <div class="container">
+        <div class="reveal">
+          <div class="eyebrow">How it works</div>
+          <h2 class="section-h2">
+            From invisible to cited<br />in three steps.
+          </h2>
+          <p class="section-p">
+            Most tools stop at step one. Albetora AEO closes the full loop —
+            from monitoring all the way to the written fix.
+          </p>
+        </div>
+
+        <div class="steps reveal">
+          <div class="step-card">
+            <div class="step-num">01</div>
+            <div class="step-icon-wrap" style="background: var(--violet-light)">
+              📡
+            </div>
+            <div class="step-title">We scan every AI engine for your brand</div>
+            <div class="step-desc">
+              Every 6 hours, Albetora AEO queries ChatGPT, Perplexity, Google
+              AI, Copilot, Claude and Grok with your tracked prompts. You see
+              exactly where you appear, where you don't, and who is taking your
+              spot.
+            </div>
+            <span
+              class="step-chip"
+              style="background: var(--violet-light); color: var(--violet)"
+              >Monitor</span
+            >
+          </div>
+          <div class="step-card">
+            <div class="step-num">02</div>
+            <div class="step-icon-wrap" style="background: #fff7ed">⚡</div>
+            <div class="step-title">Fix Queue tells you exactly what to do</div>
+            <div class="step-desc">
+              For every visibility gap, Fix Queue explains the root cause —
+              missing comparison page, stale content, no FAQ schema — and ranks
+              each action by its estimated impact on your visibility score.
+            </div>
+            <span
+              class="step-chip"
+              style="background: #fff7ed; color: var(--orange)"
+              >Diagnose</span
+            >
+          </div>
+          <div class="step-card">
+            <div class="step-num">03</div>
+            <div class="step-icon-wrap" style="background: var(--green-bg)">
+              ✏️
+            </div>
+            <div class="step-title">
+              AI writes the content brief in 30 seconds
+            </div>
+            <div class="step-desc">
+              Click "Draft with AI" on any fix. Albetora AEO generates a full
+              content brief — recommended structure, word count, FAQ questions,
+              schema requirements, and a linking map. Ready to hand to any
+              writer.
+            </div>
+            <span
+              class="step-chip"
+              style="background: var(--green-bg); color: var(--green)"
+              >Execute</span
+            >
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ STATS ══ -->
+    <section id="stats">
+      <div class="container">
+        <div class="stats-grid reveal">
+          <div class="stat-block">
+            <div class="stat-num">6<sup>×</sup></div>
+            <div class="stat-label">More actionable than monitoring alone</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-num">6</div>
+            <div class="stat-label">AI engines tracked simultaneously</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-num">30<sup>s</sup></div>
+            <div class="stat-label">To generate a full GEO content brief</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-num">#1</div>
+            <div class="stat-label">
+              Complaint about every other tool, solved
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ FEATURES ══ -->
+    <section id="features">
+      <div class="container">
+        <div class="reveal">
+          <div class="eyebrow">What makes it different</div>
+          <h2 class="section-h2">
+            Built for what comes<br />after the dashboard.
+          </h2>
+          <p class="section-p">
+            Knowing you're invisible is the easy part. Every feature in Albetora
+            AEO was designed to answer the question that comes next: "so what do
+            I do?"
+          </p>
+        </div>
+
+        <div class="features-grid reveal">
+          <div class="feat-card">
+            <div class="feat-icon">⚡</div>
+            <div class="feat-title">Fix Queue — not just a dashboard</div>
+            <div class="feat-desc">
+              Every visibility gap becomes a ranked action item with a clear
+              explanation of why it's happening and a single next step. No
+              spreadsheet. No guesswork.
+            </div>
+            <div class="feat-proof">
+              "Unless a tool gives <strong>clear recommendations</strong>, it's
+              hard to justify $300+/month just to know if ChatGPT mentioned your
+              brand." — r/b2bmarketing
+            </div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">✏️</div>
+            <div class="feat-title">AI Content Writer — built in</div>
+            <div class="feat-desc">
+              Don't just know what page to write — get the full brief.
+              Structure, word count, FAQ questions, schema requirements, and the
+              competitor gap you're closing. In 30 seconds.
+            </div>
+            <div class="feat-proof">
+              "It tracks the source, but gives
+              <strong>zero actionable strategy</strong> on how to restructure
+              content to get cited." — Verified G2 review
+            </div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">📊</div>
+            <div class="feat-title">Visibility tied to real traffic</div>
+            <div class="feat-desc">
+              Native GA4 and Google Search Console integration. Connect your AI
+              citation data to actual visits and know which fixes drove real
+              traffic — not just scores.
+            </div>
+            <div class="feat-proof">
+              "<strong>Cannot correlate citations to website visits.</strong> No
+              connection between visibility metrics and business outcomes." —
+              Independent review
+            </div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">🔬</div>
+            <div class="feat-title">GEO Audit with fix guides</div>
+            <div class="feat-desc">
+              A 25-factor audit that doesn't just flag problems — it tells you
+              how to fix each one, with copy templates, schema examples, and a
+              priority order.
+            </div>
+            <div class="feat-proof">
+              "Provide <strong>detailed guidance on how to solve</strong> the
+              issue — not just that it's broken." — User feedback on Otterly
+            </div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">🤖</div>
+            <div class="feat-title">6 engines, not 4</div>
+            <div class="feat-desc">
+              Track ChatGPT, Perplexity, Google AI, Copilot, Claude and Grok.
+              The engines your competitors aren't watching are the ones with the
+              lowest competition right now.
+            </div>
+            <div class="feat-proof">
+              "Engine coverage <strong>misses Claude, Grok, DeepSeek</strong> —
+              exactly where early movers have an advantage." — SaaS tools
+              comparison
+            </div>
+          </div>
+          <div class="feat-card">
+            <div class="feat-icon">🏢</div>
+            <div class="feat-title">Agency-ready from day one</div>
+            <div class="feat-desc">
+              Unlimited client workspaces, white-label reports, and per-client
+              Fix Queues. One flat price — not a per-prompt model that explodes
+              once you track seriously.
+            </div>
+            <div class="feat-proof">
+              "The headline price
+              <strong
+                >can realistically become $300+ before you have full
+                coverage</strong
+              >." — Pricing comparison review
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ PROOF ══ -->
+    <section id="proof">
+      <div class="container">
+        <div class="reveal">
+          <div class="eyebrow">Why we built this</div>
+          <h2 class="section-h2">
+            Real complaints.<br />Real reasons Albetora AEO exists.
+          </h2>
+          <p class="section-p">
+            These are direct quotes from people using existing AI visibility
+            tools — the exact gaps Albetora AEO was built to close.
+          </p>
+        </div>
+
+        <div class="quotes-grid reveal">
+          <div class="quote-card">
+            <div class="quote-source-chip">G2 · Verified review</div>
+            <div class="quote-text">
+              "It tracks the source, but gives
+              <em>zero actionable strategy on how to restructure content</em> to
+              get cited. I stare at the dashboard and still don't know what to
+              write."
+            </div>
+            <div class="quote-author">
+              <div class="quote-avatar" style="background: #7c6fff">S</div>
+              <div>
+                <div class="quote-name">Sarah K.</div>
+                <div class="quote-role">SEO Manager · SaaS company</div>
+              </div>
+            </div>
+          </div>
+          <div class="quote-card">
+            <div class="quote-source-chip">Reddit · r/b2bmarketing</div>
+            <div class="quote-text">
+              "Good data, but
+              <em>most of these tools feel early and overpriced.</em> Unless a
+              tool gives clear recommendations or ties to revenue, it's hard to
+              justify $300+/month."
+            </div>
+            <div class="quote-author">
+              <div class="quote-avatar" style="background: #059669">M</div>
+              <div>
+                <div class="quote-name">Marcus T.</div>
+                <div class="quote-role">Growth Lead · B2B startup</div>
+              </div>
+            </div>
+          </div>
+          <div class="quote-card">
+            <div class="quote-source-chip">Independent review</div>
+            <div class="quote-text">
+              "The platform remains
+              <em>observational without built-in tools for execution.</em> Your
+              team must translate insights using external tools. That
+              translation cost is very real."
+            </div>
+            <div class="quote-author">
+              <div class="quote-avatar" style="background: #ea580c">J</div>
+              <div>
+                <div class="quote-name">James R.</div>
+                <div class="quote-role">Content Director · Digital agency</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="
+            margin-top: 40px;
+            padding: 28px 36px;
+            background: var(--violet-light);
+            border: 1px solid #c7c2f8;
+            border-radius: 14px;
+            text-align: center;
+          "
+          class="reveal"
+        >
+          <div
+            style="
+              font-size: 12px;
+              color: var(--violet);
+              font-weight: 700;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              margin-bottom: 10px;
+            "
+          >
+            Albetora AEO's answer to all three
+          </div>
+          <p
+            style="
+              font-size: 17px;
+              color: var(--text);
+              font-weight: 600;
+              max-width: 580px;
+              margin: 0 auto;
+              line-height: 1.6;
+            "
+          >
+            Monitor → diagnose → generate the brief → track the result. All in
+            one product. No translation layer required.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ CTA ══ -->
+    <section id="cta">
+      <div class="cta-box reveal">
+        <div class="cta-badge">
+          <div
+            style="
+              width: 6px;
+              height: 6px;
+              border-radius: 50%;
+              background: var(--green);
+              animation: pulse 2s infinite;
+            "
+          ></div>
+          Early access open · Free to join
+        </div>
+        <h2 class="cta-h2">Stop watching.<br />Start ranking.</h2>
+        <p class="cta-sub">
+          Join 340 SEO managers and growth teams who are done paying for
+          dashboards that don't tell them what to do next.
+        </p>
+
+        <div id="cta-form-wrap">
+          <form
+            class="cta-form"
+            onsubmit="submitWaitlist(event, 'cta-success')"
+          >
+            <input
+              class="cta-input"
+              id="hero-email"
+              type="email"
+              placeholder="your@email.com"
+              required
+            />
+            <button type="submit" onclick="sendEmail()" class="cta-btn">
+              Get early access
+            </button>
+          </form>
+          <div class="cta-note" style="margin-top: 10px">
+            <span>Free</span> during early access &nbsp;·&nbsp; No credit card
+            &nbsp;·&nbsp; Cancel anytime
+          </div>
+        </div>
+
+        <div class="success-box" id="cta-success">
+          <div class="success-icon">✦</div>
+          <div class="success-h">You're on the list.</div>
+          <div class="success-p">
+            We'll email you the moment early access opens.<br /><strong
+              >Expect it within 7 days.</strong
+            ><br /><br />In the meantime — share this with one person who's
+            frustrated with their AI visibility tool.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ FOOTER ══ -->
+    <footer>
+      <a href="#" class="nav-logo" style="text-decoration: none">
+        <div
+          class="nav-logo-mark"
+          style="width: 24px; height: 24px; font-size: 12px"
+        >
+          ✦
+        </div>
+        <span class="nav-logo-text" style="font-size: 14px">Albetora AEO</span>
+      </a>
+      <div class="footer-links">
+        <a href="#">Privacy</a>
+        <a href="#">Terms</a>
+        <a href="mailto:hello@Albetora AEO.io">Contact</a>
+      </div>
+      <div class="footer-copy">
+        © 2026 Albetora AEO · Built to fix what monitoring tools won't.
+      </div>
+    </footer>
+
+    <script>
+      // ── WAITLIST ──
+      function submitWaitlist(e, successId) {
+        e.preventDefault();
+        const wrap =
+          successId === "hero-success"
+            ? document.querySelector(".hero-form")
+            : document.getElementById("cta-form-wrap");
+        if (wrap) wrap.style.display = "none";
+        const s = document.getElementById(successId);
+        if (s) {
+          s.style.display = "block";
+        }
+      }
+
+      // ── NAV SCROLL ──
+      window.addEventListener("scroll", () => {
+        document
+          .getElementById("nav")
+          .classList.toggle("scrolled", window.scrollY > 30);
+      });
+
+      // ── SMOOTH SCROLL ──
+      document.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener("click", (e) => {
+          const t = document.querySelector(a.getAttribute("href"));
+          if (t) {
+            e.preventDefault();
+            t.scrollIntoView({ behavior: "smooth" });
+          }
+        });
+      });
+
+      // ── SCROLL REVEAL ──
+      const obs = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              obs.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: "0px 0px -30px 0px" },
+      );
+      document.querySelectorAll(".reveal").forEach((el) => obs.observe(el));
+
+      // ── TYPEWRITER ON DRAFT BUTTON ──
+      const BRIEF = `# Asana Alternative: Full Guide
+
+## Why You're Missing This
+ChatGPT cites comparison pages
+3.2× more than feature pages.
+You have no comparison page.
+
+## Recommended Structure
+1. Direct answer in first 80 words
+2. Comparison table (5 tools)
+3. Use-case sections by team type
+4. FAQ block with JSON-LD schema
+5. G2 rating callout for trust
+
+## Technical Checklist
+☐ Add FAQ JSON-LD schema
+☐ "Last updated" date visible
+☐ Links → Pricing & Features
+☐ Open Graph tags complete
+
+Target: 1,400 words
+Update: Every 90 days`;
+
+      let typing = false;
+      function runTypewriter() {
+        if (typing) return;
+        typing = true;
+        const el = document.getElementById("brief-output");
+        el.innerHTML = '<span class="brief-cursor"></span>';
+        const lines = BRIEF.split("\n");
+        let li = 0,
+          ci = 0;
+
+        function tick() {
+          if (li >= lines.length) {
+            typing = false;
+            return;
+          }
+          const line = lines[li];
+          if (ci === 0) {
+            const span = document.createElement("span");
+            if (line.startsWith("##")) {
+              span.style.color = "#059669";
+              span.style.fontWeight = "600";
+            } else if (line.startsWith("#")) {
+              span.style.color = "#5b50f0";
+              span.style.fontWeight = "700";
+            } else if (line.startsWith("☐")) {
+              span.style.color = "#b45309";
+            }
+            el.insertBefore(span, el.querySelector(".brief-cursor"));
+          }
+          const spans = el.querySelectorAll("span:not(.brief-cursor)");
+          const cur = spans[spans.length - 1];
+          if (ci < line.length) {
+            cur.textContent += line[ci];
+            ci++;
+            setTimeout(tick, 16);
+          } else {
+            el.insertBefore(
+              document.createElement("br"),
+              el.querySelector(".brief-cursor"),
+            );
+            li++;
+            ci = 0;
+            setTimeout(tick, 35);
+          }
+        }
+        tick();
+      }
+      function sendEmail() {
+        let email = document.getElementById("hero-email").value;
+
+        emailjs
+          .send("service_jnxy63l", "template_fjxmmva", {
+            user_email: email,
+          })
+          .then(() => {
+            console.log("Email Submitted Successfully");
+          })
+          .catch((error) => {
+            console.log(error);
+            alert("Error");
+          });
+      }
+    </script>
+  </body>
+</html>
